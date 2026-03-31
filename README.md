@@ -1,4 +1,6 @@
-### Cryo-ET: Subtomogram Averaging (STA)
+## Cryo-ET
+**Affiliation: Navarro Lab, Department of Fundamental Microbiology, Department of Biology and Medicine, University of Lausanne**
+### Subtomogram Averaging (STA)
 
 Cryo-Electron Tomography (ET) has become a standard choice in retrieving visual proteomics information in situ, particularly in studying ultrastructure of the organelles and structure of macromolecular machineries in the cells. The following page is dedicated to provide a step-by-step workflow on how to obtain macromolecular structure in its native environment on tomography data through subtomogram averaging (STA). [1] <br>
 
@@ -16,7 +18,12 @@ Cryo-Electron Tomography (ET) has become a standard choice in retrieving visual 
 *Sufficient storage on your computer is necessary to perform this image processing. You may use your organization's GPU/CPU cluster if available.*
 
 **UNIL Users** <br>
-To those who have access to UNIL computing cluster, please use OnDemand to request memory and CPU. GPU work will be run separately with a customized bash script so you do not have to request GPU at the moment. <br>
+To those who have access to UNIL computing cluster, GPU work will be run separately with a customized slurm script. <br>
+
+**Structure of Interest** <br>
+In this tutorial, we will be visualizing an HIV-1 capsid-SP1 derived from tomography data. While the high-resolution structure of this has been published here [**EMD-4015**](https://www.ebi.ac.uk/emdb/EMD-4015?tab=overview), this walkthrough provides an introductory session how we can obtain lower-resolution version of it.<br>
+
+
 
 
 #### References
