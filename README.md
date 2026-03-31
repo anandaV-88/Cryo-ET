@@ -1,27 +1,20 @@
-## Cryo-ET
-**Affiliation: Navarro Lab, Department of Fundamental Microbiology, Department of Biology and Medicine, University of Lausanne**
-### Subtomogram Averaging (STA)
 
-Cryo-Electron Tomography (ET) has become a standard choice in retrieving visual proteomics information in situ, particularly in studying ultrastructure of the organelles and structure of macromolecular machineries in the cells. The following page is dedicated to provide a step-by-step workflow on how to obtain macromolecular structure in its native environment on tomography data through subtomogram averaging (STA). [1] <br>
+# Cryo-ET: Subtomogram Averaging (STA)
+**Determining macromolecular complexes in their native environment**
+--
 
-#### Data Requirements:
-- Aligned Tilt Series [2]
-- 3D Reconstructed Tomograms (Denoised and Un-denoised) [2][3]
-- MATLAB Dynamo-EM package installed[4]
-- RELION 4 or 5 installed [5]
-- ChimeraX or Chimera USCF installed [6] <br>
-*Tutorial data is available here. In the case you would like to use your own tomograms, you may use CryoNAV platform and follow its tutorials to align, reconstruct and denoise your tomography data.*
+## What is STA?
+Subtomogram averaging (STA) is one of the main structural biology techniques used to obtain structure of macromolecular complexes *in situ*. Unlike Single Particle Analysis (SPA) which only provides structural conformations in purified states, STA allows us to understand ...
 
-#### Computing Requirements:
-- GPUs
-- 2+ Cores <br>
-*Sufficient storage on your computer is necessary to perform this image processing. You may use your organization's GPU/CPU cluster if available.*
+ 
+ ![cpb_27_6_066803_f2](https://github.com/user-attachments/assets/0ed4d49d-802a-4d06-bb4e-08116c06ad5f)
 
-**UNIL Users** <br>
-To those who have access to UNIL computing cluster, GPU work will be run separately with a customized slurm script. <br>
+ 
+*Briggs et al., 2023*
 
 **Structure of Interest** <br>
-In this tutorial, we will be visualizing an HIV-1 capsid-SP1 derived from tomography data. While the high-resolution structure of this has been published here [**EMD-4015**](https://www.ebi.ac.uk/emdb/EMD-4015?tab=overview), this walkthrough provides an introductory session how we can obtain lower-resolution version of it.<br>
+In this tutorial, we will be visualizing an **HIV-1 capsid-SP1** (shown below) derived from tomography data. While the high-resolution STA structure (3.9 A) of this has been published here [**EMD-4015**](https://www.ebi.ac.uk/emdb/EMD-4015?tab=overview), this walkthrough provides an introductory session how we can obtain lower-resolution version of it. <br>
+<img width="1000" height="1000" alt="image1" src="https://github.com/user-attachments/assets/a3dc77ef-c557-4bf5-a14b-ff86e450d623" />
 
 
 
