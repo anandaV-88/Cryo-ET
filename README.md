@@ -1,21 +1,19 @@
 
 # Cryo-ET: Subtomogram Averaging (STA)
 **Determining macromolecular complexes in their native environment**
+---
+ 
+**Subtomogram averaging (STA)** is one of the main structural biology techniques used to obtain structure of macromolecular complexes *in situ*. Unlike Single Particle Analysis (SPA) where structure is obtained from purified states, STA allows researchers to evaluate structural conformations in cellular context where those particles sit in space.
+
+
 --
 
-## What is STA?
-Subtomogram averaging (STA) is one of the main structural biology techniques used to obtain structure of macromolecular complexes *in situ*. Unlike Single Particle Analysis (SPA) which only provides structural conformations in purified states, STA allows us to understand ...
-
- 
- ![cpb_27_6_066803_f2](https://github.com/user-attachments/assets/0ed4d49d-802a-4d06-bb4e-08116c06ad5f)
-
- 
-*Briggs et al., 2023*
 
 **Structure of Interest** <br>
 In this tutorial, we will be visualizing an **HIV-1 capsid-SP1** (shown below) derived from tomography data. While the high-resolution STA structure (3.9 A) of this has been published here [**EMD-4015**](https://www.ebi.ac.uk/emdb/EMD-4015?tab=overview), this walkthrough provides an introductory session how we can obtain lower-resolution version of it. <br>
-<img width="1000" height="1000" alt="image1" src="https://github.com/user-attachments/assets/a3dc77ef-c557-4bf5-a14b-ff86e450d623" />
 
+
+<img width="1500" height="1000" alt="image1" src="https://github.com/user-attachments/assets/aa78864e-44e3-4d8e-951b-1f4113a55de5" />
 
 
 
