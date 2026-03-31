@@ -1,6 +1,7 @@
 
 # Cryo-ET: Subtomogram Averaging (STA)
-**Determining macromolecular complexes in their native environment**
+**Determining macromolecular complexes in their native environment**<br>
+#### Affiliation: Navarro Lab, Department of Fundamental Microbiology, Faculty of Biology and Medicine, University of Lausanne
 ---
  
 **Subtomogram averaging (STA)** is one of the main structural biology techniques used to obtain structure of macromolecular complexes *in situ*. Unlike Single Particle Analysis (SPA) where structure is obtained from purified states, STA allows researchers to evaluate structural conformations in cellular context where those particles sit in space.
