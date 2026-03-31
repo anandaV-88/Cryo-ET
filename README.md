@@ -6,16 +6,21 @@
 **Subtomogram averaging (STA)** is one of the main structural biology techniques used to obtain structure of macromolecular complexes *in situ*. Unlike Single Particle Analysis (SPA) where structure is obtained from purified states, STA allows researchers to evaluate structural conformations in cellular context where those particles sit in space.
 
 
---
-
-
 **Structure of Interest** <br>
 In this tutorial, we will be visualizing an **HIV-1 capsid-SP1** (shown below) derived from tomography data. While the high-resolution STA structure (3.9 A) of this has been published here [**EMD-4015**](https://www.ebi.ac.uk/emdb/EMD-4015?tab=overview), this walkthrough provides an introductory session how we can obtain lower-resolution version of it. <br>
 
 
 <img  src="https://github.com/user-attachments/assets/aa78864e-44e3-4d8e-951b-1f4113a55de5" width = "500" /> <img src="https://github.com/user-attachments/assets/ca97b18e-dc12-48dc-9691-a3efd53b44b9" width = "380"/>
 
+**Data Requirement** <br>
+- Tutorial data <br>
+*If you'd like to use your own dataset, we recommend you to crop your original tomogram or bin your tomogram by 4 to familiarize with the whole processing pipeline. Once satisifed with your tutorial structure, you may lower binning level to obtain higher resolution.
 
+**Installation and Dependencies** <br>
+- [MATLAB Dynamo-EM](https://drive.google.com/file/d/1x5he7ctkC4BUCNFhfXLk6heggGohELoM/view?usp=sharing)
+- [UCSF ChimeraX](https://www.cgl.ucsf.edu/chimera/download.html)
+- GPUs: Use your organization/institution GPU clusters. For **UNIL** members, you may run the same script with *dynamo_submit()* function. <br>
+- 32GB RAM available local memory: This should be sufficient for tutorial data or binned tomograms. Contact your IT support if you are based in academia.
 
 
 #### References
