@@ -11,7 +11,7 @@
 In this tutorial, we will be visualizing an **HIV-1 capsid-SP1** (shown below) derived from tomography data. While the high-resolution STA structure (3.9 A) of this has been published here [**EMD-4015**](https://www.ebi.ac.uk/emdb/EMD-4015?tab=overview), this walkthrough provides an introductory session how we can obtain lower-resolution version of it. <br>
 
 
-<img  src="https://github.com/user-attachments/assets/aa78864e-44e3-4d8e-951b-1f4113a55de5" width = "350" /> <img src="https://github.com/user-attachments/assets/ca97b18e-dc12-48dc-9691-a3efd53b44b9" width = "380"/>
+<img  src="https://github.com/user-attachments/assets/aa78864e-44e3-4d8e-951b-1f4113a55de5" width = "400" /> <img src="https://github.com/user-attachments/assets/ca97b18e-dc12-48dc-9691-a3efd53b44b9" width = "380"/>
 
 **Data Requirement** <br>
 - Tutorial data <br>
