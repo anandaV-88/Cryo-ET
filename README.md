@@ -20,8 +20,74 @@ In this tutorial, we will be visualizing an **HIV-1 capsid-SP1** (shown below) d
 **Installation and Dependencies** <br>
 - [MATLAB Dynamo-EM](https://drive.google.com/file/d/1x5he7ctkC4BUCNFhfXLk6heggGohELoM/view?usp=sharing)
 - [UCSF ChimeraX](https://www.cgl.ucsf.edu/chimera/download.html)
-- GPUs: Use your organization/institution GPU clusters. For **UNIL** members, you may run the same script with *dynamo_submit()* function. <br>
-- 32GB RAM available local memory: This should be sufficient for tutorial data or binned tomograms. Contact your IT support if you are based in academia.
+- GPUs <br>
+  Use your organization/institution GPU clusters. For **UNIL** members, you may run the same script with *dynamo_submit()* function. <br>
+- Sufficient memory (~38GB RAM) <br>
+  STA will require sufficient RAM memory to process images. Using tutorial data should not be an issue at the moment. Contact your local IT support if you encounter memory issue.
+
+
+#### Organize Data
+To run the script, make sure you create your working directory as shown below. <br>
+```
+HIV_Capsid_SP1/
+├── Tomograms/
+│   ├── vlp_7.mrc
+│   ├── vlp_6.mrc
+│   ├── vlp_5.mrc
+│   ├── vlp_4.mrc
+│   ├── vlp_3.mrc
+│   ├── vlp_2.mrc
+│   └── vlp_1.mrc
+└── STA.m
+```
+Open the **STA.m** script and adjust with your data. On MATLAB, your variables can be viewed under **Workspace** while your command output can be viewed under **Command Windows**. <br>
+
+#### Setting up working environment
+In this section, we will setup our main catalogue and associated tomograms that we have. **Catalogue** on Dynamo-EM is a management directory where our tomograms (including the different scaling sizes) and particle models will be stored. Creating a catalogue helps the package to organize the metadata in order. <br>
+```
+%% Data Organization
+% Prior to generating structure of interest, please install Dynamo-EM package on MATLAB,
+% GPU availability and 3D reconstructed tomogram(s).
+
+%% Activate Dynamo-EM package
+clear;clc; % Good practice to make sure workspace is clean to avoid variable duplicates.
+% Load Dynamo package: Adjust path if needed.
+run /usr/local/Dynamo_v.1.1.555/dynamo_activate.m
+```
+
+```
+%% Create a .vll file containing our tomograms
+% This .vll file will help us connect our processing to the full path to
+% our tomograms.
+mrc = dir(fullfile(pwd,'**','Tomograms/vlp_*.mrc'));
+path = string(fullfile({mrc.folder},{mrc.name})).';
+% Load based on our current workdir
+path = replace(path, string(pwd) + filesep , "");
+% Create .vll file containing fullpath of the location
+writelines(path, 'VLPtomograms.vll');
+```
+
+```
+%% Create a catalogue
+% Catalogue is where your tomograms and associated particle models will be
+% stored.
+dcm -create catVLP -fromvll VLPtomograms.vll;
+```
+
+#### Setting up tomograms
+
+Here you may adjust the scale size of your original tomogram. Since tutorial data may already been binned, we can proceed by using the default with "1". The 'zchunk' refers to how many Z slices chunk can the algorithm process this binning. This method helps minimize excessive computing overload.
+```
+%% Confirm the tomograms scale size
+dynamo_catalogue_bin('catVLP',1,'zchunk',300);
+``` 
+
+
+
+
+
+
+
 
 
 #### References
