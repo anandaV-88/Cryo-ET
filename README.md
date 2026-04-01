@@ -39,6 +39,8 @@ HIV_Capsid_SP1/
 │   ├── vlp_2.mrc
 │   └── vlp_1.mrc
 └── STA.m
+└── tutorialVLP
+└── tutorialVLP.ctlg
 ```
 Open the **STA.m** script and adjust with your data. On MATLAB, your variables can be viewed under **Workspace** while your command output can be viewed under **Command Windows**. <br>
 
@@ -96,12 +98,12 @@ Theoretically, if you point labels are accurate on the tomogram, you would obtai
 
 ```
 % Open one volume at a time, and generate dipole model and save into disk.
-dtmslice Tomograms/vlp_1.mrc -c catVLP -prebinned 1;
-%dtmslice Tomograms/vlp_2.mrc -c catVLP -prebinned 1;
-%dtmslice Tomograms/vlp_3.mrc -c catVLP -prebinned 1;
-%dtmslice Tomograms/vlp_4.mrc -c catVLP -prebinned 1;
-%dtmslice Tomograms/vlp_5.mrc -c catVLP -prebinned 1;
-%dtmslice Tomograms/vlp_6.mrc -c catVLP -prebinned 1;
+dtmslice Tomograms/vlp_1.mrc -c myVLP -prebinned 1;
+%dtmslice Tomograms/vlp_2.mrc -c myVLP -prebinned 1;
+%dtmslice Tomograms/vlp_3.mrc -c myVLP -prebinned 1;
+%dtmslice Tomograms/vlp_4.mrc -c myVLP -prebinned 1;
+%dtmslice Tomograms/vlp_5.mrc -c myVLP -prebinned 1;
+%dtmslice Tomograms/vlp_6.mrc -c myVLP -prebinned 1;
 ```
 Once the GUI opens up, adjust the threshold of the tomogram by selecting the icon on the top panel shown below and start creating dipoleSet model wherever you see the viral capsid. Dynamo built-in function will automatically calculate the sphere as shown below:<br>
 To label *center* and *north* of your capsid, use your keyboard and press **C** in the center and **N** on the north edge of the capsid. <br>
@@ -120,6 +122,90 @@ To label *center* and *north* of your capsid, use your keyboard and press **C** 
   <img src="https://github.com/user-attachments/assets/cb7987b6-9e8f-447f-b7bd-26b7e5e6e825" width="800"><br>
   <em>Evaluate and save model</em>
 </p>
+<br>
+
+#### Extract dipole models across tomograms
+
+```
+% Load dipoleSet models from catalogue. In the meantime, we'll use our tutorial labeled data. Each tomogram already has dipole model saved.
+dcmodels tutorialVLP -tc dipoleSet -ws o -gm 1;
+```
+
+```
+%% Create a table from each vesicle model
+c = 1; % Counter for table
+for tomo = 1:6 % Loop over 6 tomos
+    ds = o.models{tomo};
+    NDipoles = length(ds.dipoles);
+    for i=1:NDipoles
+        v = dmodels.vesicle();
+        v.center = ds.dipoles{i}.center;
+        v.radius = norm(ds.dipoles{i}.north - ds.dipoles{i}.center);
+        v.separation = 60;
+        v.crop_distance_from_surface = 0;
+        v.updateCrop();
+        tv{c} = v.grepTable();
+        tv{c}(:,22) = i;
+        tv{c}(:,20) = tomo;
+        c=c+1;
+    end
+end
+
+%% Merge all table
+tAll = dynamo_table_merge(tv, 'linear_tags', 1);
+```
+
+```
+%% Visualize all dipole models in one plot
+dtplot(tAll, 'pf', 'oriented_positions');
+axis equal;
+```
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/91a5602a-152e-4c08-8b14-0be0c6717359" width = "400"/> 
+ <img src="https://github.com/user-attachments/assets/fbf472e3-a5b5-47c7-8bd3-38b4b7170a08" width = "400" />
+
+  <em>Compilation of all of our dipoleSet models derived from tutorial data.</em>
+</p>
+<br>
+The images shown above show how our dipoleSet models generate sphere-like for the each capsid we labeled in 3D. Notice that the point coordinates are assigned on the surface of each model which we will extract those areas to capture the capsid surface layer.<br>
+
+The section below shows how we can evaluate our particles metadata. Notice that **shifts** and **angles** should remain zero at the moment because we wil perform the alignment here.
+
+```
+% The columns mention all the angles information.
+dtinfo(tAll);
+```
+
+Since we see the angles were filled, perhaps due to tutorial execution, we can reset the angles for now.
+
+```
+tAll(:, 7:9) = 0;
+```
+
+```
+%% Create unique ID to map our model to the list of different tomograms
+% Let's make sure that the points we are cropping are based on the tomogram's associated model. Assigning a .doc file creates a unique ID so that our algorithm does not crop the wrong tomogram.
+folder = 'Tomograms/';  % Our list of tomograms are stored here
+fid = fopen('VLPtomograms.docx','w');
+
+% Loop for our 6 tomograms and assign ID:
+for i = 1:6
+    fprintf(fid, '%d %svlp_%d.mrc\n', i, folder, i);
+end
+
+fclose(fid);
+```
+
+#### Subtomograms Extractions
+Once we assigned unique ID between tomograms and we can proceed to the critical part, to generate **subtomograms**. To do this, we crop our particle points into specified box size. In our case, we will crop the points present on the surface layer of the capsid and set a **box size of 128px** to crop each particle area. <br>
+
+```
+% Directory where cropped particles will be stored:
+targetFolder = './particlesSize128';
+% Using the generated table, we crop the particles with desired box size
+dtcrop('VLPtomograms.doc', tAll, targetFolder, 128);
+```
 
 
 #### References
