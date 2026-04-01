@@ -80,8 +80,16 @@ Here you may adjust the scale size of your original tomogram. Since tutorial dat
 ```
 %% Confirm the tomograms scale size
 dynamo_catalogue_bin('catVLP',1,'zchunk',300);
-``` 
+```
+If your own tomogram is at its highest resolution, it would be wise to switch the bin size to "2" so that it will be faster for you to visualize your model on Dynamo GUI. It is highly advised to follow this step even if you are not binning your tomogram. The *dynamo_catalogue_bin* helps Dynamo to confirm your tomogram scale size along the way.<br>
 
+#### Generating model: Dynamo-GUI
+To perform particle selection, we always use GUI to make sure we can visualize what we are collecting. Always use tomograms where scaling have been adjusted to avoid memory complications. Here, we will generate a model based on **dipole** <br>
+
+```
+% Open one volume at a time, and generate dipole model and save into disk.
+dtmslice Tomograms/vlp_1.mrc -c catVLP -prebinned 1;
+```
 
 
 
