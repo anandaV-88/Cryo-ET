@@ -106,8 +106,9 @@ dtmslice Tomograms/vlp_1.mrc -c catVLP -prebinned 1;
 Once the GUI opens up, adjust the threshold of the tomogram by selecting the icon on the top panel shown below and start creating dipoleSet model wherever you see the viral capsid. Dynamo built-in function will automatically calculate the sphere as shown below:<br>
 To label *center* and *north* of your capsid, use your keyboard and press **C** in the center and **N** on the north edge of the capsid. <br>
 
-<img width="1325" height="709" alt="image" src="https://github.com/user-attachments/assets/d9b11f12-aa30-4985-a89e-72f2b039d653" />
-
+| Tomoslice adjustment | Create dipole model |
+|---|---|
+| ![](https://github.com/user-attachments/assets/6e3c7e49-9fb8-44ca-acb2-9e0f077b2755) | ![](https://github.com/user-attachments/assets/cd0794a8-9eb4-4c4f-8441-0958f371bb4f) |
 
 
 #### References
