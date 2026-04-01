@@ -84,17 +84,29 @@ dynamo_catalogue_bin('catVLP',1,'zchunk',300);
 If your own tomogram is at its highest resolution, it would be wise to switch the bin size to "2" so that it will be faster for you to visualize your model on Dynamo GUI. It is highly advised to follow this step even if you are not binning your tomogram. The *dynamo_catalogue_bin* helps Dynamo to confirm your tomogram scale size along the way.<br>
 
 #### Generating model: Dynamo-GUI
-To perform particle selection, we always use GUI to make sure we can visualize what we are collecting. Always use tomograms where scaling have been adjusted to avoid memory complications. Here, we will generate a model based on **dipole** <br>
+To perform particle selection, we always use GUI to make sure we can visualize what we are collecting. Always use tomograms where scaling have been adjusted to avoid memory complications. Here, we will generate a model based on **dipoleSet**. Particularly for this viral capsid, the dipoleSet model will allow us to: <br>
+
+**Manually label capsid center and pole per capsid model.** <br>
+
+**Measure the distance between the 2 points you labeled (e.g., center and north/south)**. <br>
+
+Theoretically, if you point labels are accurate on the tomogram, you would obtain a sphere. However, if your labeling is off, you'd create either oversized or undersized sphere per viral capsid. <br>
+
+*We already prepare models for you in case your labels are off, so you may run the following the exact same script below.*
 
 ```
 % Open one volume at a time, and generate dipole model and save into disk.
 dtmslice Tomograms/vlp_1.mrc -c catVLP -prebinned 1;
+%dtmslice Tomograms/vlp_2.mrc -c catVLP -prebinned 1;
+%dtmslice Tomograms/vlp_3.mrc -c catVLP -prebinned 1;
+%dtmslice Tomograms/vlp_4.mrc -c catVLP -prebinned 1;
+%dtmslice Tomograms/vlp_5.mrc -c catVLP -prebinned 1;
+%dtmslice Tomograms/vlp_6.mrc -c catVLP -prebinned 1;
 ```
+Once the GUI opens up, adjust the threshold of the tomogram by selecting the icon on the top panel shown below and start creating dipoleSet model wherever you see the viral capsid. Dynamo built-in function will automatically calculate the sphere as shown below:<br>
+To label *center* and *north* of your capsid, use your keyboard and press **C** in the center and **N** on the north edge of the capsid. <br>
 
-
-
-
-
+<img width="1325" height="709" alt="image" src="https://github.com/user-attachments/assets/d9b11f12-aa30-4985-a89e-72f2b039d653" />
 
 
 
