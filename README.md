@@ -92,7 +92,7 @@ To perform particle selection, we always use GUI to make sure we can visualize w
 
 Theoretically, if you point labels are accurate on the tomogram, you would obtain a sphere. However, if your labeling is off, you'd create either oversized or undersized sphere per viral capsid. <br>
 
-*We already prepare models for you in case your labels are off, so you may run the following the exact same script below.*
+*We already prepare models for you in case your labels are off, so you do not have to collect each model from all the tomograms. You may follow the steps below to get an overview how collecting model works.*
 
 ```
 % Open one volume at a time, and generate dipole model and save into disk.
@@ -106,9 +106,20 @@ dtmslice Tomograms/vlp_1.mrc -c catVLP -prebinned 1;
 Once the GUI opens up, adjust the threshold of the tomogram by selecting the icon on the top panel shown below and start creating dipoleSet model wherever you see the viral capsid. Dynamo built-in function will automatically calculate the sphere as shown below:<br>
 To label *center* and *north* of your capsid, use your keyboard and press **C** in the center and **N** on the north edge of the capsid. <br>
 
-| Tomoslice adjustment | Create dipole model |
-|---|---|
-| ![](https://github.com/user-attachments/assets/6e3c7e49-9fb8-44ca-acb2-9e0f077b2755) | ![](https://github.com/user-attachments/assets/cd0794a8-9eb4-4c4f-8441-0958f371bb4f) |
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/6e3c7e49-9fb8-44ca-acb2-9e0f077b2755" width="800"><br>
+  <em>Tomoslice adjustment</em>
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/4f20db3f-a0e0-4766-9095-c0d87ca66107" width="800"><br>
+  <em>Create dipole model</em>
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/cb7987b6-9e8f-447f-b7bd-26b7e5e6e825" width="800"><br>
+  <em>Evaluate and save model</em>
+</p>
 
 
 #### References
