@@ -194,7 +194,7 @@ Once we assigned unique ID between tomograms and we can proceed to the critical 
 
 ```
 % Directory where cropped particles will be stored:
-targetFolder = './particlesSize128';
+targetFolder = './myparticlesSize128';
 % Using the generated table, we crop the particles with desired box size
 dtcrop('VLPtomograms.doc', tAll, targetFolder, 128);
 ```
@@ -307,10 +307,14 @@ Evaluate our **myfirst_vlp** averaged result after aligning:
 %% Check first alignment result
 ddb myfirst_VLP:a -v % last computed average
 ```
-```
-%% Check first alignment result: individual particles
-ddbrowse -d myfirst_VLP:data -t myfirst_VLP:rt
-```
+<p align="center"> 
+ <img src="https://github.com/user-attachments/assets/7cb3d211-2e55-4d5c-bfaa-ca4a082e6163" width="300"/>
+ <img src="https://github.com/user-attachments/assets/46fbc2f7-22e4-46f7-a32b-b5aa989ec1b2" width="300"/>
+ <img src="https://github.com/user-attachments/assets/5a3d0163-c91a-4a18-86c2-d4d93810e5a4" width="300"/><br>
+  <em>Last computed average after alignment in **myfirst_vlp**.</em>
+</p>
+<br>
+
 Notice that we are now able to evaluate some feature after the first alignment. However, to further maximize our structure of interest, we can perform **subboxing**. This function allows us to reposition our particle of interest to the center of the box. Depending on how well your alignment project goes, in this case we see a slight shift of the particle based on the last computed average from **myfirst_vlp**. To do this, we follow the method below:<br>
 
 ```
@@ -333,7 +337,7 @@ rSubunitFromCenter = [57,64,69] - [65,65,65];
 ```
 %% First Alignment: Recenter the particles
 % Load the last computed table from first alignment project
-ddb first_VLP:rt -ws t
+ddb myfirst_VLP:rt -ws t
 
 % Apply new center to the table
 ts = dynamo_subboxing_table(t,rSubunitFromCenter);
@@ -342,7 +346,7 @@ ts = dynamo_subboxing_table(t,rSubunitFromCenter);
 ```
 %% First Alignment: Adjust table
 % Use the adjusted table to recrop the particles
-targetFolder = './particlesSize96r';
+targetFolder = './myparticlesSize96r';
 
 % Crop: reduce box size to 96
 dtcrop('VLPtomograms.doc',ts,targetFolder,96);
