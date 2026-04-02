@@ -276,7 +276,7 @@ dvput(pr,'lim_r1',[40,40,40]);
 % shift limiting way
 dvput(pr,'limm_r1',1);
 % Computing Env.
-dvput(pr,'dst','standalone_gpu','cores',1,'mwa',2);
+dynamo_submit('myfirst_VLP','gpus',1,'time','1:00:00');
 ```
 
 ```
@@ -370,21 +370,182 @@ dview(oa.average);
 ```
 
 <p align="center"> 
-<img src="https://github.com/user-attachments/assets/7853b987-3e56-4131-88ad-a545bcd8c8ab" width = "400" />
-<img src="https://github.com/user-attachments/assets/8c2ffc0e-625d-4dbc-bd51-84564c58f63e" width = "400"/>
-<img src="https://github.com/user-attachments/assets/e8601842-e5c7-4fb1-bdc9-84346eca397d" width = "400"/><br>
+<img src="https://github.com/user-attachments/assets/7853b987-3e56-4131-88ad-a545bcd8c8ab" width = "300" />
+<img src="https://github.com/user-attachments/assets/8c2ffc0e-625d-4dbc-bd51-84564c58f63e" width = "300"/>
+<img src="https://github.com/user-attachments/assets/e8601842-e5c7-4fb1-bdc9-84346eca397d" width = "300"/> <br>
   <em>Last computed average after alignment in **myfirst_vlp**.</em>
 </p>
 <br>
 
-Do you notice anything? If the surface in X and Y are too low or too high, we can re-adjust. However, it seems that they are quite well adjusted so don't need further adjustment. <br>
+Do you notice anything? If the surface in X and Y are too low or too high, we can re-adjust with a mask for a tighter adjustment. <br>
 
 ```
 %% Save
 dwrite(oa.average,[targetFolder '/template.em']);
 ```
+#### Alignment with customized mask
+In this section, we generate a mask to adjust the height of the our particle of interest. <br>
 
+```
+%% First Alignment: Align Symmetry Axis
+mr = dpktomo.examples.motiveTypes.Membrane();
+mr.thickness = 22;
+mr.sidelength = 96;
+mr.getMask();
+mem  = (mr.mask)*(-1)+1;  % invert contrast
+cyl = dynamo_cylinder(7,96,[48,48,48]);  % create a cylinder (this will be the 'hole')
+templateSum = mem+cyl;    % sum the two masks
+template = templateSum;
+template(template>0) = 1; % binarize the new mask
+```
 
+```
+%% First Alignment: Evaluate aligned symmetry axis
+dview(template);
+```
+
+<p align="center"> 
+<img src="https://github.com/user-attachments/assets/b9d3a2e3-f363-4e80-82c1-1fa9b1a6d0b1" width = "300" />
+<img src="https://github.com/user-attachments/assets/58693ff6-9db0-40e4-8c40-409da9d4ca99" width = "300" />
+<img src="https://github.com/user-attachments/assets/cda95baf-b741-4e61-bf21-4054ec7abbb2" width = "300" /><br>
+  <em>Customized mask to re-center of last computed average.</em>
+</p>
+<br>
+
+```
+%% First Alignment: Apply Mask Alignment
+sal = dalign(oa.average, template, 'cr',30,'cs',5,'ir',0, ...
+    'dim',48,'limm',1,'lim',[15,15,15]);
+
+%% First Alignment: Evaluate adjusted average
+dmapview(sal.aligned_particle);
+```
+
+```
+%% First Alignment: Save parameters
+tr = dynamo_table_rigid(finalTbl,sal.Tp);
+
+%% First Alignment: Adjust Oversampling
+% Exclude subvolumes that are closer than 20 px. of each other.
+trEx = dpktbl.exclusionPerVolume(tr,20);
+```
+```
+%% First Alignment: Save
+targetFolder = './particlesSize96r';
+dwrite(trEx,[targetFolder, '/crop_trEx.tbl']);
+oa = daverage(targetFolder, 't', trEx, 'fc', 1);
+% Visualize average after mask adjustment
+dview('./particlesSize96r/template_trEx.em')
+```
+<p align="center"> 
+<img src="https://github.com/user-attachments/assets/6b338d63-2888-4fed-8b55-f0f99d4412fe" width = "300"/>
+<img src="https://github.com/user-attachments/assets/6010ef2a-d62f-4c3c-b9df-24be3337f9d9" width = "300"/>
+<img src="https://github.com/user-attachments/assets/68254f2f-219c-4184-a355-4834be68b258" width = "300"/><br>
+    <em>Last computed average after mask adjustment.</em>
+</p>
+<br>
+Notice that the Z is now more re-centered than in previous average.<br>
+```
+%% Save our adjusted average template
+dwrite(oa.average,[targetFolder '/template_trEx.em']);
+```
+
+```
+%% Apply mask alignment
+%% Second Alignment: Adjust Mask Refinement
+% Create an alignment mask
+mr = dpktomo.examples.motiveTypes.Membrane();
+mr.thickness = 55;
+mr.sidelength = 96;
+mr.getMask();
+mem_mask = mr.mask;
+```
+
+```
+%% Visualize the data
+dview('./mem_mask_thick.em')
+```
+<p align="center"> 
+<img src="https://github.com/user-attachments/assets/c3168e10-c31f-47fd-8754-d94d3afefbf6" width = "300"/>
+<img src="https://github.com/user-attachments/assets/73e68ab3-af02-431a-addc-c2b2cc3f4bfd" width = "300"/>
+<img src="https://github.com/user-attachments/assets/07341652-a413-4ac0-8016-af6ee1bd1646" width = "300"/><br>
+    <em>A refinement mask generated.</em>
+</p>
+<br>
+
+```
+%% Mask Alignment: Visualize mask overlay
+dslices(oa.average,'y','-ov','mem_mask_thick.em','-ovas','mask','-ovc','r');
+```
+
+[insert result]
+
+```
+%% Second Alignment: Save Mask Ref.
+dwrite(mem_mask,'mem_mask_thick.em');
+```
+
+#### Second Alignment Project
+
+In the previous run, we aligned the last computed average from **myfirst_VLP** alignment project with subboxing and customized masks. The result of the adjusted average will now be used as a better template to further align our subvolumes (subtomograms). Notice how we improved the first template to the mask adjustment one? <br>
+
+To run the second alignment project, we use the following commands: <br>
+
+```
+%% Second Alignment: Create Alignment Project
+pr = 'mysecond_VLP';
+dcp.new(pr,'d',targetFolder,'t',[targetFolder '/crop_trEx.tbl'],'template',[targetFolder '/template_trEx.em'],'masks','default','show',0);
+```
+
+```
+%% Second Alignment: Adjust Numerical Parameters
+% Add new tight alignment mask
+dvput(pr, 'file_mask', 'mem_mask_thick.em');
+%%
+% Parameters Round: 1
+dvput(pr,'ite_r1',2);
+dvput(pr,'dim_r1',48);
+dvput(pr,'cr_r1',30);
+dvput(pr,'cs_r1',10);
+dvput(pr,'ir_r1',30);
+dvput(pr,'is_r1',10);
+dvput(pr,'rf_r1',4);
+dvput(pr,'rff_r1',2);
+dvput(pr,'lim_r1',[15,15,15]);
+dvput(pr,'limm_r1',1);
+dvput(pr,'sym_r1','c6');
+
+% Parameters Round: 2
+dvput(pr,'ite_r2',1);
+dvput(pr,'dim_r2',96);
+dvput(pr,'cr_r2',12);
+dvput(pr,'cs_r2',4);
+dvput(pr,'ir_r2',12);
+dvput(pr,'is_r2',4);
+dvput(pr,'rf_r2',4);
+dvput(pr,'rff_r2',2);
+dvput(pr,'lim_r2',[5,5,5]);
+dvput(pr,'limm_r2',2);
+dvput(pr,'sym_r2','c6');
+
+% Computing Env.
+dvput(pr,'dst','standalone_gpu','cores',1,'mwa',2);
+```
+
+```
+%% Second Alignment: Check Parameters
+dvcheck mysecond_VLP
+```
+
+```
+%% Second Alignment: Confirm Parameters
+dvunfold mysecond_VLP
+```
+
+```
+%% Second Alignment: Submit alignment job to cluster
+dynamo_submit('mysecond_VLP','gpus',1,'time','1:00:00');
+```
 
 
 #### References
