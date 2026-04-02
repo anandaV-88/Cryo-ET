@@ -334,6 +334,7 @@ dpkdev.legacy.dynamo_mapview('myfirst_VLP:a:ite=0:last');
 rSubunitFromCenter = [57,64,69] - [65,65,65];
 ```
 
+
 ```
 %% First Alignment: Recenter the particles
 % Load the last computed table from first alignment project
@@ -342,24 +343,40 @@ ddb myfirst_VLP:rt -ws t
 % Apply new center to the table
 ts = dynamo_subboxing_table(t,rSubunitFromCenter);
 ```
+**C** : Center of subvolume <br>
+**N**: Center of subunit <br>
+As shown below, you can adjust our last computed average from **myfirst_vlp** based on the center of box (subvolume) and our particle of interest (center of subunit). You can use your mouse and left click for **C** and right click for **N** positions. On the **Click** panel, you can see the different positional coordinates.  <br>
+![subboxing_balance](https://github.com/user-attachments/assets/2db019a3-337e-479f-8d67-341064ef0a85) 
+<img src="https://github.com/user-attachments/assets/cb6101bb-24bf-40ab-9642-7a5ae55ecef8" width = "800"/>
+
+To further align our particles, we crop our box size smaller to easily evaluate our alignment. Below we use box size of 96: <br>
 
 ```
-%% First Alignment: Adjust table
+%% First Alignment: Adjust table with subboxing
 % Use the adjusted table to recrop the particles
 targetFolder = './myparticlesSize96r';
 
 % Crop: reduce box size to 96
 dtcrop('VLPtomograms.doc',ts,targetFolder,96);
 ```
-Now we average the adjusted crop made on the last computed average through subboxing: <br>
+Now we average the adjusted crop made on the last computed average with subboxing parameters: <br>
 
 ```
-%% First Alignment: Evaluate
+%% First Alignment: Average table with subboxing
 % Average and visualize the re-cropped particles
 finalTbl = dread([targetFolder,'/crop.tbl']);
 oa = daverage(targetFolder, 't', finalTbl,'fc',1);
 dview(oa.average);
 ```
+
+<p align="center"> 
+<img src="https://github.com/user-attachments/assets/7853b987-3e56-4131-88ad-a545bcd8c8ab" width = "400" />
+<img src="https://github.com/user-attachments/assets/8c2ffc0e-625d-4dbc-bd51-84564c58f63e" width = "400"/>
+<img src="https://github.com/user-attachments/assets/e8601842-e5c7-4fb1-bdc9-84346eca397d" width = "400"/><br>
+  <em>Last computed average after alignment in **myfirst_vlp**.</em>
+</p>
+<br>
+
 Do you notice anything? If the surface in X and Y are too low or too high, we can re-adjust. However, it seems that they are quite well adjusted so don't need further adjustment. <br>
 
 ```
