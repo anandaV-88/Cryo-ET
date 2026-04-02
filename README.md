@@ -207,6 +207,74 @@ targetFolder = './particlesSize128';
 dtcrop('VLPtomograms.doc', tAll, targetFolder, 128);
 ```
 
+```
+%% Generate initial averages
+% Load our cropped particles that are stored as .crop.tbl.
+finalTbl = dread([targetFolder '/crop.tbl']);
+```
+
+Activating fourier compensation during averaging so that the intensity signals for each particle that were affected my missing wedge gets averaged properly.
+```
+%% Generate coarse average
+% Here we average out our cropped file with 'fc' as "1" to activate fourier compensation.
+oa = daverage(targetFolder, 't', finalTbl, 'fc',1);
+```
+The output of **daverage()** will contain several metadata. We normally evaluate the *.average* result to evaluate. <br>
+
+```
+%% Visualze
+dview(oa.average);
+```
+
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1b71969d-6cf8-4e51-bae1-2b7ca69bfe20" width = "300" /> 
+ <img src="https://github.com/user-attachments/assets/87c89144-0a34-4d6e-998d-e9ef8117ad9f" width = "300"/>
+ <img src="https://github.com/user-attachments/assets/18c12d0f-be1c-4255-9a05-e016b4e4876c" width = "300"/><br>
+  <em>Coarse average prior to any alignment in X,Y,Z.</em>
+</p>
+<br>
+
+```
+%% Save
+% Save initial average
+dwrite(oa.average,[targetFolder '/template.em']);
+```
+Since this is merely coarse average done before any alignment, we cannot see distinguish any feature just yet. However, we will save this as our initial template to guide the alignment. <br>
+
+### Subtomograms Alignment
+The alignment is one of the most critical steps in STA because this alignment project is how we will be rotating and spinning each particle in our subtomograms to one aligned state. <br>
+
+#### First Alignment Project
+
+```
+%% First Alignment Project
+% Variable to assign name for alignment project
+pr = 'first_VLP';
+% Generate parameter
+dcp.new(pr,'d',targetFolder,'t',[targetFolder '/crop.tbl'], 'template', ...
+    [targetFolder '/template.em'],'masks','default','show',0);
+```
+Next, we determine our **numerical parameters**, which refers to the rotations, angles, and shifting fine tuning so that our particles are aligned. This step is one of the most cumbersome methods because there is no definitive parameters for every structure. This means you must perform this on 1 structure state at a time from your selected particle model. In our case, we will perform 2-3 alignment projects for all the VLP capsid dipoleSet models at once. <br>
+
+```
+%% First Alignment: Adjust Numerical Parameters
+
+dvput(pr,'ite_r1',4);
+dvput(pr,'dim_r1',32);
+dvput(pr,'cr_r1',40);
+dvput(pr,'cs_r1',20);
+dvput(pr,'ir_r1',360);
+dvput(pr,'is_r1',40);
+dvput(pr,'rf_r1',4);
+dvput(pr,'rff_r1',2);
+dvput(pr,'lim_r1',[40,40,40]);
+dvput(pr,'limm_r1',1);
+% Computing Env.
+dvput(pr,'dst','standalone_gpu','cores',1,'mwa',2);
+```
+
+
 
 #### References
 [1] Navarro PP, Stahlberg H, Castaño-Díez D. Protocols for Subtomogram Averaging of Membrane Proteins in the Dynamo Software Package. Front Mol Biosci. 2018 Sep 4;5:82. doi: 10.3389/fmolb.2018.00082. PMID: 30234127; PMCID: PMC6131572. <br>
