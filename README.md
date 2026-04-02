@@ -73,7 +73,7 @@ writelines(path, 'VLPtomograms.vll');
 %% Create a catalogue
 % Catalogue is where your tomograms and associated particle models will be
 % stored.
-dcm -create catVLP -fromvll VLPtomograms.vll;
+dcm -create myVLP -fromvll VLPtomograms.vll;
 ```
 
 #### Setting up tomograms
@@ -81,7 +81,7 @@ dcm -create catVLP -fromvll VLPtomograms.vll;
 Here you may adjust the scale size of your original tomogram. Since tutorial data may already been binned, we can proceed by using the default with "1". The 'zchunk' refers to how many Z slices chunk can the algorithm process this binning. This method helps minimize excessive computing overload.
 ```
 %% Confirm the tomograms scale size
-dynamo_catalogue_bin('catVLP',1,'zchunk',300);
+dynamo_catalogue_bin('myVLP',1,'zchunk',300);
 ```
 If your own tomogram is at its highest resolution, it would be wise to switch the bin size to "2" so that it will be faster for you to visualize your model on Dynamo GUI. It is highly advised to follow this step even if you are not binning your tomogram. The *dynamo_catalogue_bin* helps Dynamo to confirm your tomogram scale size along the way.<br>
 
@@ -170,17 +170,9 @@ axis equal;
 <br>
 The images shown above show how our dipoleSet models generate sphere-like for the each capsid we labeled in 3D. Notice that the point coordinates are assigned on the surface of each model which we will extract those areas to capture the capsid surface layer.<br>
 
-The section below shows how we can evaluate our particles metadata. Notice that **shifts** and **angles** should remain zero at the moment because we wil perform the alignment here.
-
 ```
 % The columns mention all the angles information.
 dtinfo(tAll);
-```
-
-Since we see the angles were filled, perhaps due to tutorial execution, we can reset the angles for now.
-
-```
-tAll(:, 7:9) = 0;
 ```
 
 ```
@@ -227,10 +219,12 @@ dview(oa.average);
 ```
 
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/1b71969d-6cf8-4e51-bae1-2b7ca69bfe20" width = "300" /> 
- <img src="https://github.com/user-attachments/assets/87c89144-0a34-4d6e-998d-e9ef8117ad9f" width = "300"/>
- <img src="https://github.com/user-attachments/assets/18c12d0f-be1c-4255-9a05-e016b4e4876c" width = "300"/><br>
+<p align="center"> 
+ <img src="https://github.com/user-attachments/assets/a8c383bf-cc7d-4f0e-a26e-f5b4342f3abd" width = "300" />
+ <img src="https://github.com/user-attachments/assets/95b8d05b-906f-41b4-a2ac-696fb74359fc" width = "300"/>
+ <img src="https://github.com/user-attachments/assets/c710bfb1-ebb0-45a4-9d64-c4cd8e4dcadf" width = "300"/>
+
+
   <em>Coarse average prior to any alignment in X,Y,Z.</em>
 </p>
 <br>
@@ -240,7 +234,7 @@ dview(oa.average);
 % Save initial average
 dwrite(oa.average,[targetFolder '/template.em']);
 ```
-Since this is merely coarse average done before any alignment, we cannot see distinguish any feature just yet. However, we will save this as our initial template to guide the alignment. <br>
+Since this is merely coarse average done before any alignment, we cannot see distinguish any feature just yet, but we can see a rough feature of curvature on X/Y depicting outer surface layer of the capsid. We will save this as our initial template to guide the alignment. <br>
 
 ### Subtomograms Alignment
 The alignment is one of the most critical steps in STA because this alignment project is how we will be rotating and spinning each particle in our subtomograms to one aligned state. <br>
@@ -250,31 +244,125 @@ The alignment is one of the most critical steps in STA because this alignment pr
 ```
 %% First Alignment Project
 % Variable to assign name for alignment project
-pr = 'first_VLP';
+pr = 'myfirst_VLP';
 % Generate parameter
 dcp.new(pr,'d',targetFolder,'t',[targetFolder '/crop.tbl'], 'template', ...
     [targetFolder '/template.em'],'masks','default','show',0);
 ```
 Next, we determine our **numerical parameters**, which refers to the rotations, angles, and shifting fine tuning so that our particles are aligned. This step is one of the most cumbersome methods because there is no definitive parameters for every structure. This means you must perform this on 1 structure state at a time from your selected particle model. In our case, we will perform 2-3 alignment projects for all the VLP capsid dipoleSet models at once. <br>
 
-For more information on the command lines, you can refer on [Dynamo_Command_Info]('./Dynamo_Command_Info.pdf').
+For more information on the command lines, you can refer on ('[Dynamo_Command_Info.pdf](https://github.com/anandaV-88/Cryo-ET/blob/main/Dynamo_Command_Info.pdf)').
 
 ```
 %% First Alignment: Adjust Numerical Parameters
-
+% No. of iteration: 4
 dvput(pr,'ite_r1',4);
+% No. of particle dimension: rescale to 32
 dvput(pr,'dim_r1',32);
+% No. of cone aperture: 40
 dvput(pr,'cr_r1',40);
+% No. of cone sampling: 20
 dvput(pr,'cs_r1',20);
+% No. of in-plane range (azimuth): 360
 dvput(pr,'ir_r1',360);
+% No. of in-plane sampling (azimuth sampling): 40
 dvput(pr,'is_r1',40);
+% No. of refine: 4
 dvput(pr,'rf_r1',4);
+% No. of refine factor
 dvput(pr,'rff_r1',2);
+% shift limits
 dvput(pr,'lim_r1',[40,40,40]);
+% shift limiting way
 dvput(pr,'limm_r1',1);
 % Computing Env.
 dvput(pr,'dst','standalone_gpu','cores',1,'mwa',2);
 ```
+
+```
+%% First Alignment: Check Numerical Parameters
+% This is to ensure your input metadata are valid. The system will respond "seems safe enough" if your metadata is good to proceed.
+dvcheck myfirst_VLP
+```
+```
+%% First Alignment: Confirm Numerical Parameters
+% Run this to compile the project prior to submitting into cluster.
+dvunfold myfirst_VLP
+```
+
+```
+%% First Alignment: Submit alignment job into cluster
+% For **UNIL** user, we can submit to our cluster. Here we use 2 GPUs and request for 2 hours slot. This should be done within 10mins.
+dynamo_submit('first_VLP','gpus',1,'time','2:00:00');
+```
+
+```
+%% First Alignment: Check status of alignment
+% On the command window, you can see whether your project has started running or even completed.
+dvstatus myfirst_VLP
+```
+Evaluate our **myfirst_vlp** averaged result after aligning:
+
+```
+%% Check first alignment result
+ddb myfirst_VLP:a -v % last computed average
+```
+```
+%% Check first alignment result: individual particles
+ddbrowse -d myfirst_VLP:data -t myfirst_VLP:rt
+```
+Notice that we are now able to evaluate some feature after the first alignment. However, to further maximize our structure of interest, we can perform **subboxing**. This function allows us to reposition our particle of interest to the center of the box. Depending on how well your alignment project goes, in this case we see a slight shift of the particle based on the last computed average from **myfirst_vlp**. To do this, we follow the method below:<br>
+
+```
+%% First Alignment: Evaluate the averages
+% Evaluate the averages of all iterations from initial to the last.
+dpkdev.legacy.dynamo_mapview('myfirst_VLP:a:ite=0:last');
+```
+
+[insert gif] <br>
+
+**center of subunits** - **center of subvolume**
+
+```
+%% First Alignment: Subboxing
+% To recenter, we use 65,65,65 (128px) for our subvolume, and 57,64,69 as
+% our subunit.
+rSubunitFromCenter = [57,64,69] - [65,65,65];
+```
+
+```
+%% First Alignment: Recenter the particles
+% Load the last computed table from first alignment project
+ddb first_VLP:rt -ws t
+
+% Apply new center to the table
+ts = dynamo_subboxing_table(t,rSubunitFromCenter);
+```
+
+```
+%% First Alignment: Adjust table
+% Use the adjusted table to recrop the particles
+targetFolder = './particlesSize96r';
+
+% Crop: reduce box size to 96
+dtcrop('VLPtomograms.doc',ts,targetFolder,96);
+```
+Now we average the adjusted crop made on the last computed average through subboxing: <br>
+
+```
+%% First Alignment: Evaluate
+% Average and visualize the re-cropped particles
+finalTbl = dread([targetFolder,'/crop.tbl']);
+oa = daverage(targetFolder, 't', finalTbl,'fc',1);
+dview(oa.average);
+```
+Do you notice anything? If the surface in X and Y are too low or too high, we can re-adjust. However, it seems that they are quite well adjusted so don't need further adjustment. <br>
+
+```
+%% Save
+dwrite(oa.average,[targetFolder '/template.em']);
+```
+
 
 
 
