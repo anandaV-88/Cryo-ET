@@ -547,6 +547,174 @@ dvunfold mysecond_VLP
 dynamo_submit('mysecond_VLP','gpus',1,'time','1:00:00');
 ```
 
+```
+%% Check status of second alignment
+dvstatus mysecond_VLP
+```
+
+Once completed, we can evaluate the last computed average from **mysecond_VLP**. <br>
+
+```
+ddb mysecond_VLP:a -v
+```
+
+<p align="center"> 
+<img src="https://github.com/user-attachments/assets/3715d310-2d25-481a-ba3f-9757317c5369" width = "300"/>
+<img src="https://github.com/user-attachments/assets/53a5fb56-c765-474f-92ae-adda95226b4b" width = "300"/>
+<img src="https://github.com/user-attachments/assets/eacac421-3f84-4564-aad3-05d00ec61441" width = "300"/>
+    <em>Last computed average from **mysecond_VLP**.</em>
+</p>
+<br>
+
+The last computed average from **mysecond_VLP** is now interpretable! On **Z**, we can visualize where the **capsid protein 24** resides in the center of the capsid. Unfortunately, we must go back to the original size of **128px** to fully visualize them. We don't need intensive alignment on our third project, so we will perform light alignment with higher cropping size. <br>
+
+#### Final adjustments
+
+```
+% Load the last computed average
+ddb mysecond_VLP:rt -ws t
+
+% Assign target folder to store results
+targetFolder = './particlesSize128_aligned_2';
+dtcrop('VLPtomograms.doc', t, targetFolder, 128); % We use the original tomograms to re-crop.
+```
+```
+%% Second Alignment: Re-compute average
+% Average and visualize the re-cropped particles
+finalTbl = dread([targetFolder,'/crop.tbl']);
+oAfter = daverage(targetFolder, 't', finalTbl,'fc',1);
+dview(oAfter.average);
+```
+<p align="center"> 
+<img src="https://github.com/user-attachments/assets/97ea6c7f-535a-40a2-b2fa-56d13c607023" width = "300"/>
+<img src="https://github.com/user-attachments/assets/51e9170a-089a-4624-8040-54468fd3bfee" width = "300"/>
+<img src="https://github.com/user-attachments/assets/1153805e-66c0-42ba-b427-5fd08e522ef1" width = "300"/><br>
+    <em> 128 box size template.</em>
+</p>
+<br>
+Notice that here we can get a larger overview of the capsid. We can then use this for our third alignment project as a template. <br>
+
+```
+%% Second Alignment: Save Re-cropped template
+dwrite(oAfter.average,[targetFolder '/template.em']);
+```
+```
+%% Third Alignment: Adjust Mask Refinement
+% Create an alignment mask
+mr = dpktomo.examples.motiveTypes.Membrane();
+mr.thickness = 40;
+mr.sidelength = 128;
+mr.getMask();
+mem_mask = mr.mask;
+```
+
+```
+%% Evaluate mask
+dview('./mem_mask_thick_128.em');
+```
+<p align="center"> 
+<img src="https://github.com/user-attachments/assets/c9302afa-6a29-4a49-a31a-de257dc8f816" width = "300" />
+<img src="https://github.com/user-attachments/assets/db7fa240-02ca-4347-9b94-7db10fbf7120" width = "300"/>
+<img src="https://github.com/user-attachments/assets/af18877b-ba8f-4d3a-89eb-25cb07b00062" width = "300"/> <br>
+    <em> 128 box size mask.</em>
+</p>
+<br>
+
+```
+%% Third Alignment: Visualize mask overlay
+dslices(oAfter.average,'x','-ov','mem_mask_thick_128.em','-ovas','mask','-ovc','r');
+% We should see that our masks are quite aligned with the ROI even in 128.
+```
+
+```
+%% Third Alignment: Save Mask Ref.
+dwrite(mem_mask,'mem_mask_thick_128.em');
+```
+
+```
+%% Third Alignment: Create Alignment Project
+pr = 'third_VLP';
+dcp.new(pr,'d',targetFolder,'t',[targetFolder '/crop.tbl'],'template',[targetFolder '/template.em'],'masks','default','show',0);
+```
+
+```
+%% Third Alignment: Adjust Numerical Parameters
+% Add new tight alignment mask
+dvput(pr, 'file_mask', 'mem_mask_thick_128.em');
+% Parameters Round: 1
+dvput(pr,'ite_r1',2);
+dvput(pr,'cr_r1',20);
+dvput(pr,'cs_r1',5);
+dvput(pr,'ir_r1',20);
+dvput(pr,'is_r1',5);
+dvput(pr,'rf_r1',5);
+dvput(pr,'rff_r1',2);
+dvput(pr,'high_r1',2);
+dvput(pr,'low_r1',23);
+dvput(pr,'sym_r1','c6');
+dvput(pr,'dim_r1',64);
+dvput(pr,'lim_r1',[10 10 10]);
+dvput(pr,'limm_r1',1);
+dvput(pr,'sep_r1',0);
+dvput(pr,'rm_r1',0);
+dvput(pr,'thr_r1',0.20);
+dvput(pr,'thrmod_r1',0);
+
+% Parameters Round: 2
+dvput(pr,'ite_r2',2);
+dvput(pr,'cr_r2',10);
+dvput(pr,'cs_r2',3);
+dvput(pr,'ir_r2',10);
+dvput(pr,'is_r2',3);
+dvput(pr,'rf_r2',5);
+dvput(pr,'rff_r2',2);
+dvput(pr,'high_r2',2);
+dvput(pr,'low_r2',23);
+dvput(pr,'sym_r2','c6');
+dvput(pr,'dim_r2',128);
+dvput(pr,'lim_r2',[5 5 5]);
+dvput(pr,'limm_r2',2);
+dvput(pr,'sep_r2',0);
+dvput(pr,'rm_r2',0);
+dvput(pr,'thr_r2',0.20);
+dvput(pr,'thrmod_r2',0);
+
+% Computing Env.
+dvput(pr,'dst','standalone_gpu','cores',1,'mwa',2);
+```
+
+```
+%% Third Alignment: Check Parameters
+dvcheck mythird_VLP
+```
+
+```
+%% Third Alignment: Confirm Parameters
+dvunfold mythird_VLP
+```
+
+```
+%% Third: Submit alignment job to cluster
+dynamo_submit('mythird_VLP','gpus',1,'time','1:00:00');
+```
+
+```
+%% Third: Status
+ddb mythird_VLP:a -v
+```
+
+<p align="center"> 
+<img src="https://github.com/user-attachments/assets/e56d0302-38e9-431d-8813-e4384cd75838" width = "300"/>
+<img src="https://github.com/user-attachments/assets/96899f9e-e6ab-4ee2-8f15-f77063b8d4dc" width = "300"/>
+<img src="https://github.com/user-attachments/assets/b2a74974-e024-49a6-9435-69fa57afe8ca" width = "300"/> <br>
+    <em> Last computed average of **mythird_VLP** alignment.</em>
+</p>
+<br>
+
+On **dview**, go to top panel and select **Export** > **Invert, send to Chimera UCSF**. This will give you the finalized result of the HIV capsid structure. You can also explore **Chimera** platform to adjust 3D visualization. <br>
+
+
+
 
 #### References
 [1] Navarro PP, Stahlberg H, Castaño-Díez D. Protocols for Subtomogram Averaging of Membrane Proteins in the Dynamo Software Package. Front Mol Biosci. 2018 Sep 4;5:82. doi: 10.3389/fmolb.2018.00082. PMID: 30234127; PMCID: PMC6131572. <br>
