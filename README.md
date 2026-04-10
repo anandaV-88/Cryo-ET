@@ -734,6 +734,8 @@ This will return the following GUI, and you can follow the parameters below. You
     <em> Tube mask after reference adjustment view .</em>
 </p> <br>
 
+
+
 ```
 %% Third Alignment: Apply Cropped Mask Alignment
 % Here, we no longer adjust the numerical parameters because our previous
@@ -774,6 +776,14 @@ In case you would like to analyze the mid-section of the structure, you can "sli
  <img src="https://github.com/user-attachments/assets/e939eabd-7477-42d0-8e33-d4a203c06168" width = 500/><br>
  <em> Evaluating STA volume on Chimera .</em>
 </p> <br>
+
+<img width="1102" height="751" alt="Screenshot 2026-04-10 152309" src="https://github.com/user-attachments/assets/77fe33a4-9be7-4186-9eb2-17ffcce97605" />
+<img width="1043" height="557" alt="Screenshot 2026-04-10 152344" src="https://github.com/user-attachments/assets/cedd14cf-6a57-49ac-be44-9341dfeda24c" />
+<img width="1062" height="602" alt="Screenshot 2026-04-10 152458" src="https://github.com/user-attachments/assets/39379b67-acb0-4e68-9d0c-6c07fd255426" />
+<img width="892" height="782" alt="Screenshot 2026-04-10 160404" src="https://github.com/user-attachments/assets/6b12aaae-a8b4-40ac-9322-1162bb4933c2" />
+<img width="852" height="755" alt="Screenshot 2026-04-10 155955" src="https://github.com/user-attachments/assets/03516899-9213-453a-b2bc-2615e04b40ea" />
+
+
 
 
 
