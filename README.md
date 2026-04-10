@@ -769,6 +769,13 @@ To visualize our STA (subtomogram averaged) volume,  we select the **Chimera** p
 
 In case you would like to analyze the mid-section of the structure, you can "slice" from side angle by going to panel **Tools > Viewing control > Sideview**. On the main Chimera window, adjust the angle and on the sideview window, adjust the vertical lines outside your structure. <br>
 
+<p align="center">
+<img src="https://github.com/user-attachments/assets/dbe268bb-67fc-4be1-9407-4e7f28430440" width = 500/>
+ <img src="https://github.com/user-attachments/assets/e939eabd-7477-42d0-8e33-d4a203c06168" width = 500/><br>
+ <em> Evaluating STA volume on Chimera .</em>
+</p> <br>
+
+
 
 #### References
 [1] Navarro PP, Stahlberg H, Castaño-Díez D. Protocols for Subtomogram Averaging of Membrane Proteins in the Dynamo Software Package. Front Mol Biosci. 2018 Sep 4;5:82. doi: 10.3389/fmolb.2018.00082. PMID: 30234127; PMCID: PMC6131572. <br>
