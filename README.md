@@ -713,7 +713,61 @@ ddb mythird_VLP:a -v
 
 On **dview**, go to top panel and select **Export** > **Invert, send to Chimera UCSF**. This will give you the finalized result of the HIV capsid structure. You can also explore **Chimera** platform to adjust 3D visualization. <br>
 
+```
+% Run this to create mask while viewing every result
+dynamo_mask();
+```
+This will return the following GUI, and you can follow the parameters below. You can visualize each mask with *view* button. <br>
 
+<p align="center"> 
+<img src="https://github.com/user-attachments/assets/ca88d5b5-ca30-4bbf-8755-e96fae335ccb" width = 400 /> <br>
+<img src="https://github.com/user-attachments/assets/3e22a95c-65a3-47aa-92c2-50ff796bef32" width = 300 />
+<img src="https://github.com/user-attachments/assets/7c65c91a-04bf-4d11-abba-2ca9143b6640" width = 300/>
+<img src="https://github.com/user-attachments/assets/8c203874-15f7-4724-b932-e5b1353850ba" width = 300/><br>
+    <em> Tube mask view .</em>
+</p> <br>
+
+<p align="center">
+<img src="https://github.com/user-attachments/assets/940be9d0-c82c-44ef-845d-1032041df7af" width = 300 />
+<img src="https://github.com/user-attachments/assets/e990fc24-85c7-4f15-b00c-adacb81e6fd8" width = 300/>
+<img src="https://github.com/user-attachments/assets/9e193b86-e85f-4abc-9c76-3ffd595d933e" width = 300/><br>
+    <em> Tube mask after reference adjustment view .</em>
+</p> <br>
+
+```
+%% Third Alignment: Apply Cropped Mask Alignment
+% Here, we no longer adjust the numerical parameters because our previous
+% computed average from third alignment was alredy decent.
+sal = dalign('temp.em', [mask_path, '/inv_tube_mask_128.em'], 'cr',0,'cs',0,'ir',0, ...
+    'dim',128,'limm',1, 'lim',[0,0,0]);
+
+%% Third Alignment: Evaluate adjusted average
+dmapview(sal.aligned_particle);
+%dwrite(sal.aligned_particle, 'sal_aligned_average_final.em')
+```
+To visualize our STA (subtomogram averaged) volume,  we select the **Chimera** panel on top then proceeds to **Invert + Append current volume to running Chimera session**. Chimera GUI should now open up with our STA structure. The box noise is now removed since we applied the cropping mask previously, but to further clean our noise, proceed to **Tools > Volume Data > Hide Dust** and adjust by sliding the *Hide Dust* slide. Your volume should roughly look similar to the original lattice but with lower resolution. <br>
+
+<p align="center">
+<img src="https://github.com/user-attachments/assets/d2df2a92-8a80-4aa6-ad9e-158c93363443" width = 300 />
+<img src="https://github.com/user-attachments/assets/830e18a7-9e5f-4193-af5e-56db457b3fab" width = 300/>
+<img src="https://github.com/user-attachments/assets/4abeeb5c-0b11-4268-839f-c8fafe5da46b" width = 300/><br>
+    <em> Averages in X,Z,Y after cropping mask adjustment .</em>
+</p> <br>
+<p align="center">
+<img src="https://github.com/user-attachments/assets/edf8950a-5fa5-436e-b419-f70f47aa3da9" width = 450/><br>
+</p> <br>
+<p align="center">
+<img src="https://github.com/user-attachments/assets/4b3e99ae-883f-4ccc-b8ea-71d0427746bd" width = 300/>
+<img src="https://github.com/user-attachments/assets/07d81f7f-a5b4-40f1-be59-77e87dcbc99a" width = 300/>
+<img src="https://github.com/user-attachments/assets/88f2850e-298d-44eb-9ab3-8ec1aeb8e6be" width = 300/><br>
+    <em> Inverting averaged volume to Chimera UCSF .</em>
+</p> <br>
+<p align="center">
+<img src="https://github.com/user-attachments/assets/90c75a63-891a-46b5-901a-1b1a7d49b525" width = 500/>
+<img src="https://github.com/user-attachments/assets/bf011f11-7c87-4b30-9d88-d1257fbe8c06" width = 500/> <br>
+</p> <br>
+
+In case you would like to analyze the mid-section of the structure, you can "slice" from side angle by going to panel **Tools > Viewing control > Sideview**. On the main Chimera window, adjust the angle and on the sideview window, adjust the vertical lines outside your structure. <br>
 
 
 #### References
