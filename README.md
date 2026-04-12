@@ -777,11 +777,20 @@ In case you would like to analyze the mid-section of the structure, you can "sli
  <em> Evaluating STA volume on Chimera .</em>
 </p> <br>
 
-<img width="1102" height="751" alt="Screenshot 2026-04-10 152309" src="https://github.com/user-attachments/assets/77fe33a4-9be7-4186-9eb2-17ffcce97605" />
-<img width="1043" height="557" alt="Screenshot 2026-04-10 152344" src="https://github.com/user-attachments/assets/cedd14cf-6a57-49ac-be44-9341dfeda24c" />
-<img width="1062" height="602" alt="Screenshot 2026-04-10 152458" src="https://github.com/user-attachments/assets/39379b67-acb0-4e68-9d0c-6c07fd255426" />
-<img width="892" height="782" alt="Screenshot 2026-04-10 160404" src="https://github.com/user-attachments/assets/6b12aaae-a8b4-40ac-9322-1162bb4933c2" />
-<img width="852" height="755" alt="Screenshot 2026-04-10 155955" src="https://github.com/user-attachments/assets/03516899-9213-453a-b2bc-2615e04b40ea" />
+<p align="center">
+<img src="https://github.com/user-attachments/assets/77fe33a4-9be7-4186-9eb2-17ffcce97605" />
+<img src="https://github.com/user-attachments/assets/cedd14cf-6a57-49ac-be44-9341dfeda24c" />
+<img src="https://github.com/user-attachments/assets/39379b67-acb0-4e68-9d0c-6c07fd255426" /> <br>
+ <em> High-res (green) and low-res (gray) .</em>
+</p> <br>
+
+<p align="center">
+<img src="https://github.com/user-attachments/assets/1ffa8e58-4100-434a-91b3-43dc33e1f0e8" width =350/>
+<img src="https://github.com/user-attachments/assets/80a6303e-4577-4043-be56-3d573853dee6" width = 370/> <br>
+ <em> High-res (green) and low-res (gray) overlay STA. Box size difference.</em>
+</p> <br>
+
+
 
 
 
