@@ -18,6 +18,24 @@ In this tutorial, we will be visualizing an **HIV-1 capsid-SP1** (shown below) d
 
 **Reminder: If you are part of UNIL MLS program, tutorial metadata and dependencies will be shared with you during class.** <br>
 
+```
+# On terminal, log in to curnagl
+ssh yourusername@curnagl.dcsr.unil.ch
+```
+
+```
+# Create directory
+mkdir -p mySTA/HIV_Capsid_SP1/
+
+# Set working directory
+cd mySTA/HIV_Capsid_SP1/
+```
+
+```
+# Copy tutorial data
+cp /users/yourusername/work/TRAINING/UNIL/FBM/pnavarr1/navarro_teaching/Dynamo_STA_data/mySTA/HIV_Capsid_SP1/{STA4Students.m,VLPtomograms.vll} ./
+```
+
 **Installation and Dependencies** <br>
 - [MATLAB Dynamo-EM](https://drive.google.com/file/d/1x5he7ctkC4BUCNFhfXLk6heggGohELoM/view?usp=sharing)
 - [UCSF ChimeraX](https://www.cgl.ucsf.edu/chimera/download.html)
