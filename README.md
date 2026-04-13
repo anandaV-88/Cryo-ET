@@ -18,6 +18,7 @@ In this tutorial, we will be visualizing an **HIV-1 capsid-SP1** (shown below) d
 *If you'd like to use your own dataset, we recommend you to crop your original tomogram or bin your tomogram by 4 to familiarize with the whole processing pipeline. Once satisifed with your tutorial structure, you may lower binning level to obtain higher resolution.
 
 **Installation and Dependencies** <br>
+*For UNIL MLS students, your dependencies will be provided to you in class.*
 - [MATLAB Dynamo-EM](https://drive.google.com/file/d/1x5he7ctkC4BUCNFhfXLk6heggGohELoM/view?usp=sharing)
 - [UCSF ChimeraX](https://www.cgl.ucsf.edu/chimera/download.html)
 - GPUs <br>
