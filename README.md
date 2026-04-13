@@ -34,7 +34,7 @@ mySTA/
 │   ├── STA4Students.m
 │   ├── VLPtomograms.vll
 ```
-Open the **STA.m** script and adjust with your data. On MATLAB, your variables can be viewed under **Workspace** while your command output can be viewed under **Command Windows**. <br>
+Open the **STA.m** or **STA4Students.m** script and adjust with your data. On MATLAB, your variables can be viewed under **Workspace** while your command output can be viewed under **Command Windows**. <br>
 
 #### Setting up working environment
 In this section, we will setup our main catalogue and associated tomograms that we have. **Catalogue** on Dynamo-EM is a management directory where our tomograms (including the different scaling sizes) and particle models will be stored. Creating a catalogue helps the package to organize the metadata in order. <br>
@@ -43,29 +43,18 @@ In this section, we will setup our main catalogue and associated tomograms that 
 % Prior to generating structure of interest, please install Dynamo-EM package on MATLAB,
 % GPU availability and 3D reconstructed tomogram(s).
 
-%% Activate Dynamo-EM package
+%% Activate Dynamo
 clear;clc; % Good practice to make sure workspace is clean to avoid variable duplicates.
 % Load Dynamo package: Adjust path if needed.
-run /usr/local/Dynamo_v.1.1.555/dynamo_activate.m
+run C:\CoursNavarro\Dynamo\dynamo_temp_1.1.555\dynamo_activate.m
 ```
 
-```
-%% Create a .vll file containing our tomograms
-% This .vll file will help us connect our processing to the full path to
-% our tomograms.
-mrc = dir(fullfile(pwd,'**','Tomograms/vlp_*.mrc'));
-path = string(fullfile({mrc.folder},{mrc.name})).';
-% Load based on our current workdir
-path = replace(path, string(pwd) + filesep , "");
-% Create .vll file containing fullpath of the location
-writelines(path, 'VLPtomograms.vll');
-```
-
+A text file called VLPtomograms.vll contains the full path to tomograms that will be used. In this case, please use the already generated .vll by adjusting the full paths inside. You can open the .vll on MATLAB by right-click and open as text. <br>
 ```
 %% Create a catalogue
-% Catalogue is where your tomograms and associated particle models will be
-% stored.
-dcm -create myVLP -fromvll VLPtomograms.vll;
+% Catalogue is where your tomograms and associated particle models are
+% stored. Please adjust VLPtomograms.vll path here.
+dcm -create myVLP -fromvll VLPtomograms.vll
 ```
 
 #### Setting up tomograms
@@ -80,23 +69,36 @@ If your own tomogram is at its highest resolution, it would be wise to switch th
 #### Generating model: Dynamo-GUI
 To perform particle selection, we always use GUI to make sure we can visualize what we are collecting. Always use tomograms where scaling have been adjusted to avoid memory complications. Here, we will generate a model based on **dipoleSet**. Particularly for this viral capsid, the dipoleSet model will allow us to: <br>
 
-**Manually label capsid center and pole per capsid model.** <br>
+**- Manually label capsid center and pole (north and/or south) per capsid model.** <br>
 
-**Measure the distance between the 2 points you labeled (e.g., center and north/south)**. <br>
+**- Measure the distance between the 2 points you labeled (e.g., center and north/south)**. <br>
+
+```
+%% Load tutorial path
+% For most of the metadata, we'll be using the following results from
+% tutorial except for a few of our STA. Here, we specify the path to the
+% catalogue: Adjust if needed.
+cat_Path = fullfile('Z:\TRAINING\UNIL\FBM\pnavarr1\navarro_teaching\Dynamo_STA_data\HIV_Capsid\');
+```
 
 Theoretically, if you point labels are accurate on the tomogram, you would obtain a sphere. However, if your labeling is off, you'd create either oversized or undersized sphere per viral capsid. <br>
 
 *We already prepare models for you in case your labels are off, so you do not have to collect each model from all the tomograms. You may follow the steps below to get an overview how collecting model works.*
 
 ```
+%% Generate dipoleSet model: GUI
 % Open one volume at a time, and generate dipole model and save into disk.
-dtmslice Tomograms/vlp_1.mrc -c myVLP -prebinned 1;
-%dtmslice Tomograms/vlp_2.mrc -c myVLP -prebinned 1;
-%dtmslice Tomograms/vlp_3.mrc -c myVLP -prebinned 1;
-%dtmslice Tomograms/vlp_4.mrc -c myVLP -prebinned 1;
-%dtmslice Tomograms/vlp_5.mrc -c myVLP -prebinned 1;
-%dtmslice Tomograms/vlp_6.mrc -c myVLP -prebinned 1;
+% The model will eventually be saved into myVLP catalogue we just created.
+
+% 1 here refers to un-binned. If your data happens to be bigger than the
+% tutorials, you may select 2. This will provide quicker visualization on
+% Dynamo without crashes.
+tomo_path = fullfile(cat_Path, 'DownloadLinkVLPs/vlp_1.mrc');
+dtmslice(tomo_path, 'c', 'myVLP','prebinned',1);
+
 ```
+ You can create one model and save to disk. However, we will proceed with the models that have been created for tutorials. <br>
+
 Once the GUI opens up, adjust the threshold of the tomogram by selecting the icon on the top panel shown below and start creating dipoleSet model wherever you see the viral capsid. Dynamo built-in function will automatically calculate the sphere as shown below:<br>
 To label *center* and *north* of your capsid, use your keyboard and press **C** in the center and **N** on the north edge of the capsid. <br>
 
@@ -116,130 +118,196 @@ To label *center* and *north* of your capsid, use your keyboard and press **C** 
 </p>
 <br>
 
+#### So what just happened?
+When we assign C (center) and N (north) / S (south) on the widest mid section of the viral capsid, we are calculating the maximum sphere radius of our particle of interest, providing us the ability to detect particles that are within the specified area for further processing.
+
+#### Importing existing models to current myVLP catalogue
+
+```
+%% Load the tutorial models into our catalogue
+catName = 'myVLP'; % Put our catalogue name here
+% Full path to the models available from tutorial data. Adjust if needed.
+modelDir = 'Z:\TRAINING\UNIL\FBM\pnavarr1\navarro_teaching\Dynamo_STA_data\DipoleModels';
+
+% Loop from tomo 1 to tomo 6 according to the dipoleSet model name.
+for i = 1:6
+    dipoleMod = fullfile(modelDir, sprintf('dipoleSet_%d.omd',i)); % Based on our model name.
+    dcm('c', catName, 'i', i, 'add_model',dipoleMod); % add model to associated unique tomogram.
+end
+
+% Notice that under myVLP catalogue, we can see more models appearing.
+% These are all dipoleSet models similar to what we generated.
+```
+
 #### Extract dipole models across tomograms
 
-```
-% Load dipoleSet models from catalogue. In the meantime, we'll use our tutorial labeled data. Each tomogram already has dipole model saved.
-dcmodels tutorialVLP -tc dipoleSet -ws o -gm 1;
-```
+Now that we already have our models representing where our viral capsids are across tomograms, we then proceeds to extracting surface particles. Unfortunately, the dipoleSet models do not indicate we have point particles yet, so we need to create another model with **vesicle** feature as a model and generate discrete point particles found on surface layer of our viral capsids. Below is an example of how we can create a **vesicle** model (this feature has already been given by Dynamo) with parameters we have labeled previously. <br>
 
 ```
+%% Define crop points
+% Load dipoleSet model of each tomogram from catalogue into workspace
+dcmodels myVLP -nc dipoleSet -ws o -gm 1;
+
+% nc : name contains, -ws: workspace output , -gm 1 (dipole)
 %% Create a table from each vesicle model
+```
+
+The following loop function loads the dipoleSet model associated with each tomogram in our myVLP catalogue. For each dipole model, we create a  vesicle model where the center and radius information are adjusted based  on what we have assigned with C and N. Then, we created points 60A away from one another on the vesicle surface layer of each vesicle model. We then converted these vesicle models into table format where we can evaluate their angles, unique ID, and positions of each tomogram, and  merge them into one dataset table to ease our averaging processes later on.<br>
+
+```
 c = 1; % Counter for table
 for tomo = 1:6 % Loop over 6 tomos
     ds = o.models{tomo};
-    NDipoles = length(ds.dipoles);
-    for i=1:NDipoles
-        v = dmodels.vesicle();
-        v.center = ds.dipoles{i}.center;
-        v.radius = norm(ds.dipoles{i}.north - ds.dipoles{i}.center);
-        v.separation = 60;
+    NDipoles = length(ds.dipoles); 
+    for i=1:NDipoles % Loop over models (1 per tomogram)
+        v = dmodels.vesicle(); % Create empty vesicle model
+        v.center = ds.dipoles{i}.center; % Add center from dipole to vesicle
+        v.radius = norm(ds.dipoles{i}.north - ds.dipoles{i}.center); % Add radius
+        v.separation = 60; % Separation from crop points
         v.crop_distance_from_surface = 0;
-        v.updateCrop();
-        tv{c} = v.grepTable();
-        tv{c}(:,22) = i;
-        tv{c}(:,20) = tomo;
+        v.updateCrop(); % Update vesicle model
+
+        tv{c} = v.grepTable(); % Create crop table from using vesicle model
+        tv{c}(:,22) = i; % Add model unique ID to table
+        tv{c}(:,20) = tomo; % Add tomogram unique ID to the table
         c=c+1;
     end
 end
-
-%% Merge all table
-tAll = dynamo_table_merge(tv, 'linear_tags', 1);
 ```
+
+```
+%% Merge and save into one variable table
+% Here we use linear tags with 1 to ensure they are merged sequentially
+% (linearly). This way, each particle has its own unique ID when merged.
+tAll = dynamo_table_merge(tv,'linear_tags',1);
+```
+
+##### Evaluate merged dipoleSet models
+
+```
+% This is where we evaluate the metadata of our models which have been
+% converted to table format.
+dtinfo(tAll);
+```
+
+- Column 2 and 3: Number of particles in total
+- Column 4 to 6: All zero. No alignment has been done yet.
+- Column 7 to 9: angles reflect local geometry especially when we have dipole type of models.
+- Column 20: List of unique tomograms. Make sure there are 6 total tomograms here.
 
 ```
 %% Visualize all dipole models in one plot
+% Here we visualize how each dipoleSet model looks like per tomogram. 
 dtplot(tAll, 'pf', 'oriented_positions');
 axis equal;
+
+% You can also view this after you aligned the particles and see if the
+% orientation changed. The points here refer to the cropped particles of
+% the viral capsid surface from each model 3D, with an adjustment of
+% separation parameter.
 ```
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/91a5602a-152e-4c08-8b14-0be0c6717359" width = "400"/> 
- <img src="https://github.com/user-attachments/assets/fbf472e3-a5b5-47c7-8bd3-38b4b7170a08" width = "400" />
+ <img src="https://github.com/user-attachments/assets/fbf472e3-a5b5-47c7-8bd3-38b4b7170a08" width = "400" /> <br>
 
   <em>Compilation of all of our dipoleSet models derived from tutorial data.</em>
 </p>
 <br>
 The images shown above show how our dipoleSet models generate sphere-like for the each capsid we labeled in 3D. Notice that the point coordinates are assigned on the surface of each model which we will extract those areas to capture the capsid surface layer.<br>
 
+#### Create unique ID to map our model to the list of different tomograms
 ```
-% The columns mention all the angles information.
-dtinfo(tAll);
-```
-
-```
-%% Create unique ID to map our model to the list of different tomograms
 % Let's make sure that the points we are cropping are based on the tomogram's associated model. Assigning a .doc file creates a unique ID so that our algorithm does not crop the wrong tomogram.
-folder = 'Tomograms/';  % Our list of tomograms are stored here
-fid = fopen('VLPtomograms.docx','w');
+% Our list of tomograms are stored here
+fid_read = fopen('VLPtomograms.vll', 'r');
+paths = textscan(fid_read, '%s');
+fclose(fid_read);
 
-% Loop for our 6 tomograms and assign ID:
-for i = 1:6
-    fprintf(fid, '%d %svlp_%d.mrc\n', i, folder, i);
+% Assign each row with unique ID
+fid = fopen('VLPtomograms.doc', 'w');
+for i = 1:length(paths{1})
+    fprintf(fid, '%d %s\n', i, paths{1}{i});
 end
-
 fclose(fid);
 ```
 
-#### Subtomograms Extractions
-Once we assigned unique ID between tomograms and we can proceed to the critical part, to generate **subtomograms**. To do this, we crop our particle points into specified box size. In our case, we will crop the points present on the surface layer of the capsid and set a **box size of 128px** to crop each particle area. <br>
+#### Subtomograms Extractions (NO NEED TO RUN THIS. WE WILL LOAD THE ALREADY CROPPED PARTICLESFROM TUTORIAL HERE.)
+Once we assigned unique ID between tomograms and we can proceed to the critical part, to generate **subtomograms** (or **subparticles**). To do this, we crop our particle points into specified box size. In our case, we will crop the points present on the surface layer of the capsid and set a **box size of 128px** to crop each particle area. <br>
 
 ```
-% Directory where cropped particles will be stored:
-targetFolder = './myparticlesSize128';
-% Using the generated table, we crop the particles with desired box size
-dtcrop('VLPtomograms.doc', tAll, targetFolder, 128);
+%% Crop particles: DON'T RUN THIS (FOLLOW TUTORIAL)
+
+% We are extracting 3D subvolumes of those particles on surface
+% and average the signal inside specified box size.
+
+% Cropped particles stored in: SKIP THIS
+%targetFolder = './particlesSize128';
+% Using the generated table, we crop the particles with 128 box size: SKIP
+% THIS
+%dtcrop('VLPtomograms.doc',tAll,targetFolder,128);
+```
+**What happened there?** <br>
+From the surface layer particles we generated per capsid, we assign a **box** to contain each particle with a size of **128vx**. Assigning a proper **box size** is necessary to capture our particles of interest. There is no standard box size for all particles, so you would have to manually measure on Dynamo's GUI, and evaluate which one works best as you align and average. In our case, **128** is set as our baseline boxsize, we can always reduce the size along the way if it helps clarify our particles. <br>
+
+Activating fourier compensation during averaging so that the intensity signals for each particle that were affected my missing wedge gets averaged properly. The output of **daverage()** will contain several metadata. We normally evaluate the *.average* result to evaluate. <br>
+
+#### Subtomograms Coarse Averaging
+
+```
+% Load as variable
+% Load generated particles
+targetFolder = fullfile('Z:\TRAINING\UNIL\FBM\pnavarr1\navarro_teaching\Dynamo_STA_data\mySTA\HIV_Capsid_SP1\particlesSize128');
+finalTbl = dread([targetFolder '\crop.tbl']);
 ```
 
 ```
-%% Generate initial averages
-% Load our cropped particles that are stored as .crop.tbl.
-finalTbl = dread([targetFolder '/crop.tbl']);
+%% Visualize individual particles
+% Visualize in y axis: Normally it would be difficult to view our results
+% here if our tomograms are not denoised. In our case, the tutorial data
+% has not been denoised, so you can skip this at the moment.
+dslices(targetFolder,'projy','*','t',finalTbl,'align',1,'tag',1:10:500,'labels','on');
 ```
 
-Activating fourier compensation during averaging so that the intensity signals for each particle that were affected my missing wedge gets averaged properly.
 ```
 %% Generate coarse average
-% Here we average out our cropped file with 'fc' as "1" to activate fourier compensation.
-oa = daverage(targetFolder, 't', finalTbl, 'fc',1);
-```
-The output of **daverage()** will contain several metadata. We normally evaluate the *.average* result to evaluate. <br>
-
-```
+% Here we average out our cropped file with 'fc' as 1. 'fc' here stands for
+% fourier compensation. SKIP THIS.
+%oa = daverage(targetFolder, 't', finalTbl, 'fc',1);
 %% Visualze
-dview(oa.average);
+%dview(oa.average); % SKIP THIS
+dview([targetFolder '/template.em']);
 ```
-
 
 <p align="center"> 
  <img src="https://github.com/user-attachments/assets/a8c383bf-cc7d-4f0e-a26e-f5b4342f3abd" width = "300" />
  <img src="https://github.com/user-attachments/assets/95b8d05b-906f-41b4-a2ac-696fb74359fc" width = "300"/>
- <img src="https://github.com/user-attachments/assets/c710bfb1-ebb0-45a4-9d64-c4cd8e4dcadf" width = "300"/>
-
-
+ <img src="https://github.com/user-attachments/assets/c710bfb1-ebb0-45a4-9d64-c4cd8e4dcadf" width = "300"/> <br>
   <em>Coarse average prior to any alignment in X,Y,Z.</em>
 </p>
 <br>
 
+**Can you see describe anything from here?** <br>
+
 ```
 %% Save
 % Save initial average
-dwrite(oa.average,[targetFolder '/template.em']);
+%dwrite(oa.average,[targetFolder '/template.em']);
 ```
 Since this is merely coarse average done before any alignment, we cannot see distinguish any feature just yet, but we can see a rough feature of curvature on X/Y depicting outer surface layer of the capsid. We will save this as our initial template to guide the alignment. <br>
 
 ### Subtomograms Alignment
-The alignment is one of the most critical steps in STA because this alignment project is how we will be rotating and spinning each particle in our subtomograms to one aligned state. <br>
+The alignment is one of the most critical steps in STA because this alignment project is how we will be rotating and spinning each particle in our subtomograms to one aligned state. We should always perform project alignment before performing any other customized alignment due to our limited understanding of the current particles at hand. <br>
 
 #### First Alignment Project
 
 ```
 %% First Alignment Project
-% Variable to assign name for alignment project
+% Variable for alignment project
 pr = 'myfirst_VLP';
 % Generate parameter
 dcp.new(pr,'d',targetFolder,'t',[targetFolder '/crop.tbl'], 'template', ...
-    [targetFolder '/template.em'],'masks','default','show',0);
+    [targetFolder '/template.em'],'masks','default','show',0, 'forceOverwrite', 1);
 ```
 Next, we determine our **numerical parameters**, which refers to the rotations, angles, and shifting fine tuning so that our particles are aligned. This step is one of the most cumbersome methods because there is no definitive parameters for every structure. This means you must perform this on 1 structure state at a time from your selected particle model. In our case, we will perform 2-3 alignment projects for all the VLP capsid dipoleSet models at once. <br>
 
@@ -247,53 +315,56 @@ For more information on the command lines, you can refer on ('[Dynamo_Command_In
 
 ```
 %% First Alignment: Adjust Numerical Parameters
-% No. of iteration: 4
-dvput(pr,'ite_r1',4);
-% No. of particle dimension: rescale to 32
+% No. of iteration: 4. 2 for quick search. (How many times this alignment and averaging should be done?)
+dvput(pr,'ite_r1',2);
+% No. of particle dimension: rescale to 32. (Box size in px. for each particle)
 dvput(pr,'dim_r1',32);
-% No. of cone aperture: 40
+% No. of cone aperture: 40 (How much the particle is allowed to tilt away from its current direction?)
 dvput(pr,'cr_r1',40);
-% No. of cone sampling: 20
+% No. of cone sampling: 20 (How finely would you want to perform cone range search?)
 dvput(pr,'cs_r1',20);
-% No. of in-plane range (azimuth): 360
+% No. of in-plane range (azimuth): 360 (How much particle can rotate around its own axis?)
 dvput(pr,'ir_r1',360);
-% No. of in-plane sampling (azimuth sampling): 40
+% No. of in-plane sampling (azimuth sampling): 40 (How finely would you want to perform in plane range search?)
 dvput(pr,'is_r1',40);
-% No. of refine: 4
+% No. of refine: 4 (How many times we'd like to refine the alignment?)
 dvput(pr,'rf_r1',4);
-% No. of refine factor
+% No. of refine factor (How narrow would you like to apply your refinement? The smaller the more detailed the refinement becomes)
 dvput(pr,'rff_r1',2);
-% shift limits
+% shift limits (Define 3D distances where particles can move). Allow 40px
+% in XYZ during alignment.
 dvput(pr,'lim_r1',[40,40,40]);
-% shift limiting way
+% shift limiting way (How strongly particles are prevented from drifting away from their original position?)
 dvput(pr,'limm_r1',1);
 % Computing Env.
-dynamo_submit('myfirst_VLP','gpus',1,'time','1:00:00');
+dvput(pr,'dst','matlab_gpu','cores',1,'mwa',2);
 ```
 
+**Check if our metadata are compatible before proceeding** <br>
 ```
 %% First Alignment: Check Numerical Parameters
-% This is to ensure your input metadata are valid. The system will respond "seems safe enough" if your metadata is good to proceed.
 dvcheck myfirst_VLP
 ```
+
+**Unfold our metadata and alignment parameters** <br>
 ```
 %% First Alignment: Confirm Numerical Parameters
-% Run this to compile the project prior to submitting into cluster.
 dvunfold myfirst_VLP
 ```
 
+**Run alignment project** <br>
 ```
-%% First Alignment: Submit alignment job into cluster
-% For **UNIL** user, we can submit to our cluster. Here we use 2 GPUs and request for 2 hours slot. This should be done within 10mins.
-dynamo_submit('first_VLP','gpus',1,'time','2:00:00');
+%% Submit alignment script to cluster
+% On terminal, run the following and enter your password
+% ssh yourusername@curnagl.dcsr.unil.ch "bash /work/FAC/FBM/DMF/pnavarr1/default/Aurelien/dynamo_submit.sh ./users/your_username/mySTA/HIV_Capsid_SP1/myfirst_VLP --test"
 ```
 
-```
-%% First Alignment: Check status of alignment
-% On the command window, you can see whether your project has started running or even completed.
-dvstatus myfirst_VLP
-```
-Evaluate our **myfirst_vlp** averaged result after aligning:
+1. Log in to your curnagl and check if your project is running on GPU cluster. <br>
+
+#### Short Quiz Session
+**1. Can we perform subvolume cropping on denoised tomogram?**<br>
+**2. Can we perform particle picking on denoised tomogram?**<br>
+**3. How important is box size adjustment in STA?** <br>
 
 ```
 %% Check first alignment result
@@ -309,32 +380,25 @@ ddb myfirst_VLP:a -v % last computed average
 
 Notice that we are now able to evaluate some feature after the first alignment. However, to further maximize our structure of interest, we can perform **subboxing**. This function allows us to reposition our particle of interest to the center of the box. Depending on how well your alignment project goes, in this case we see a slight shift of the particle based on the last computed average from **myfirst_vlp**. To do this, we follow the method below:<br>
 
-```
-%% First Alignment: Evaluate the averages
-% Evaluate the averages of all iterations from initial to the last.
-dpkdev.legacy.dynamo_mapview('myfirst_VLP:a:ite=0:last');
-```
+**First Alignment with Customization: Subboxing** <br>
 
-[insert gif] <br>
-
-**center of subunits** - **center of subvolume**
+Subboxing might be necessary when we'd like to slighly re-center our particle of interest in our box size. Unfortunately, in some Dynamo programs, this function can no longer be used, so we follow tutorial here. <br>
 
 ```
-%% First Alignment: Subboxing
 % To recenter, we use 65,65,65 (128px) for our subvolume, and 57,64,69 as
 % our subunit.
-rSubunitFromCenter = [57,64,69] - [65,65,65];
-```
+%rSubunitFromCenter = [57,64,69] - [65,65,65];
 
-
-```
 %% First Alignment: Recenter the particles
 % Load the last computed table from first alignment project
-ddb myfirst_VLP:rt -ws t
+%ddb myfirst_VLP:rt -ws t;
 
 % Apply new center to the table
-ts = dynamo_subboxing_table(t,rSubunitFromCenter);
+%ts = dynamo_subboxing_table(t,rSubunitFromCenter);
 ```
+
+**center of subunits** - **center of subvolume** <br>
+
 **C** : Center of subvolume <br>
 **N**: Center of subunit <br>
 As shown below, you can adjust our last computed average from **myfirst_vlp** based on the center of box (subvolume) and our particle of interest (center of subunit). You can use your mouse and left click for **C** and right click for **N** positions. On the **Click** panel, you can see the different positional coordinates.  <br>
@@ -344,21 +408,28 @@ As shown below, you can adjust our last computed average from **myfirst_vlp** ba
 To further align our particles, we crop our box size smaller to easily evaluate our alignment. Below we use box size of 96: <br>
 
 ```
-%% First Alignment: Adjust table with subboxing
+%% First Alignment: Adjust table
 % Use the adjusted table to recrop the particles
-targetFolder = './myparticlesSize96r';
+%targetFolder = './particlesSize96r';
 
-% Crop: reduce box size to 96
-dtcrop('VLPtomograms.doc',ts,targetFolder,96);
+% Crop: reduce box size to 96 just to align things more closely.
+%dtcrop('VLPtomograms.doc',ts,targetFolder,96);
+
 ```
 Now we average the adjusted crop made on the last computed average with subboxing parameters: <br>
 
 ```
-%% First Alignment: Average table with subboxing
+%% Evaluate cropped particles from tutorial data
+targetFolder = fullfile('Z:\TRAINING\UNIL\FBM\pnavarr1\navarro_teaching\Dynamo_STA_data\mySTA\HIV_Capsid_SP1\particlesSize96r');
+
+%% First Alignment: Evaluate
 % Average and visualize the re-cropped particles
-finalTbl = dread([targetFolder,'/crop.tbl']);
-oa = daverage(targetFolder, 't', finalTbl,'fc',1);
-dview(oa.average);
+%finalTbl = dread([targetFolder,'/crop.tbl']);
+%oa = daverage(targetFolder, 't', finalTbl,'fc',1);
+%dview(oa.average);
+%% Save
+%dwrite(oa.average,[targetFolder '/template.em']);
+dview([targetFolder '/template.em']);
 ```
 
 <p align="center"> 
@@ -371,10 +442,6 @@ dview(oa.average);
 
 Do you notice anything? If the surface in X and Y are too low or too high, we can re-adjust with a mask for a tighter adjustment. <br>
 
-```
-%% Save
-dwrite(oa.average,[targetFolder '/template.em']);
-```
 #### Alignment with customized mask
 In this section, we generate a mask to adjust the height of the our particle of interest. <br>
 
