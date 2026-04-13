@@ -707,6 +707,7 @@ dview([mask_path '/mem_mask_thick_128.em']);
     <em> 128 box size mask.</em>
 </p>
 <br>
+
 ```
 %% Third Alignment: Visualize mask overlay
 dslices([targetFolder '/template.em'],'x','-ov',[mask_path '/mem_mask_thick_128.em'],'-ovas','mask','-ovc','r');
@@ -768,6 +769,7 @@ dvput(pr,'thrmod_r2',0);
 % Computing Env.
 dvput(pr,'dst','matlab_gpu','cores',1,'mwa',2);
 ```
+
 ```
 %% Third Alignment: Check Parameters
 dvcheck mythird_VLP
@@ -782,7 +784,7 @@ dvunfold mythird_VLP
 % ssh yourusername@curnagl.dcsr.unil.ch "bash /work/FAC/FBM/DMF/pnavarr1/default/Aurelien/dynamo_submit.sh ./users/yourusername/mySTA/HIV_Capsid_SP1/mythird_VLP --test"
 
 #### Short Quiz Session
-**1. How do you choose a proper box size?
+**1. How do you choose a proper box size?** <br>
 **2. From your current understanding, what makes STA different than SPA?**<br>
 **3. How can STA answer and/or support your structural biology research?**<br>
 
@@ -791,14 +793,6 @@ dvunfold mythird_VLP
 %% Third Alignment: Check status of alignment
 dvstatus mythird_VLP
 ```
-
-<p align="center"> 
-<img src="https://github.com/user-attachments/assets/e56d0302-38e9-431d-8813-e4384cd75838" width = "300"/>
-<img src="https://github.com/user-attachments/assets/96899f9e-e6ab-4ee2-8f15-f77063b8d4dc" width = "300"/>
-<img src="https://github.com/user-attachments/assets/b2a74974-e024-49a6-9435-69fa57afe8ca" width = "300"/> <br>
-    <em> Last computed average of **mythird_VLP** alignment.</em>
-</p>
-<br>
 
 #### Visualizing STA
 
@@ -811,6 +805,14 @@ dynamo_chimera -path 'C:\Program Files\Chimera 1.19\bin\chimera.exe'
 %% Check first alignment result
 ddb mythird_VLP:a -v % last computed average
 ```
+
+<p align="center"> 
+<img src="https://github.com/user-attachments/assets/e56d0302-38e9-431d-8813-e4384cd75838" width = "300"/>
+<img src="https://github.com/user-attachments/assets/96899f9e-e6ab-4ee2-8f15-f77063b8d4dc" width = "300"/>
+<img src="https://github.com/user-attachments/assets/b2a74974-e024-49a6-9435-69fa57afe8ca" width = "300"/> <br>
+    <em> Last computed average of **mythird_VLP** alignment.</em>
+</p>
+<br>
 
 On **dview**, go to top panel and select **Export** > **Invert, send to Chimera UCSF**. This will give you the finalized result of the HIV capsid structure. You can also explore **Chimera** platform to adjust 3D visualization. <br>
 
