@@ -50,7 +50,7 @@ clear;clc; % Good practice to make sure workspace is clean to avoid variable dup
 run C:\CoursNavarro\Dynamo\dynamo_temp_1.1.555\dynamo_activate.m
 ```
 
-A text file called VLPtomograms.vll contains the full path to tomograms that will be used. In this case, please use the already generated .vll by adjusting the full paths inside. You can open the .vll on MATLAB by right-click and open as text. <br>
+A text file called **VLPtomograms.vll** contains the full path to tomograms that will be used. In this case, please use the already generated .vll by adjusting the full paths inside. You can open the .vll on MATLAB by right-click and open as text. <br>
 ```
 %% Create a catalogue
 % Catalogue is where your tomograms and associated particle models are
