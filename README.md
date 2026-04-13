@@ -29,18 +29,10 @@ In this tutorial, we will be visualizing an **HIV-1 capsid-SP1** (shown below) d
 #### Organize Data
 To run the script, make sure you create your working directory as shown below. <br>
 ```
-HIV_Capsid_SP1/
-├── Tomograms/
-│   ├── vlp_7.mrc
-│   ├── vlp_6.mrc
-│   ├── vlp_5.mrc
-│   ├── vlp_4.mrc
-│   ├── vlp_3.mrc
-│   ├── vlp_2.mrc
-│   └── vlp_1.mrc
-└── STA.m
-└── tutorialVLP
-└── tutorialVLP.ctlg
+mySTA/
+├── HIV_Capsid_SP1/
+│   ├── STA4Students.m
+│   ├── VLPtomograms.vll
 ```
 Open the **STA.m** script and adjust with your data. On MATLAB, your variables can be viewed under **Workspace** while your command output can be viewed under **Command Windows**. <br>
 
