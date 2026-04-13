@@ -14,14 +14,15 @@ In this tutorial, we will be visualizing an **HIV-1 capsid-SP1** (shown below) d
 <img  src="https://github.com/user-attachments/assets/aa78864e-44e3-4d8e-951b-1f4113a55de5" width = "450" /> <img src="https://github.com/user-attachments/assets/ca97b18e-dc12-48dc-9691-a3efd53b44b9" width = "380"/>
 
 **Data Requirement** <br>
-- Tutorial data: *For UNIL MLS students, your tutorial data will be provided in class.* <br>
+- Tutorial data<br>
+
+**Reminder: If you are part of UNIL MLS program, tutorial metadata and dependencies will be shared with you during class.** <br>
 
 **Installation and Dependencies** <br>
-*For UNIL MLS students, your dependencies will be provided to you in class.*
 - [MATLAB Dynamo-EM](https://drive.google.com/file/d/1x5he7ctkC4BUCNFhfXLk6heggGohELoM/view?usp=sharing)
 - [UCSF ChimeraX](https://www.cgl.ucsf.edu/chimera/download.html)
 - GPUs <br>
-  Use your organization/institution GPU clusters. For **UNIL** members, you may run the same script with *dynamo_submit()* function. <br>
+  Use your organization/institution GPU clusters. <br>
 - Sufficient memory (~38GB RAM) <br>
   STA will require sufficient RAM memory to process images. Using tutorial data should not be an issue at the moment. Contact your local IT support if you encounter memory issue.
 
