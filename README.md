@@ -663,7 +663,7 @@ ddb mysecond_VLP:a -v % last computed average
 <p align="center"> 
 <img src="https://github.com/user-attachments/assets/3715d310-2d25-481a-ba3f-9757317c5369" width = "300"/>
 <img src="https://github.com/user-attachments/assets/53a5fb56-c765-474f-92ae-adda95226b4b" width = "300"/>
-<img src="https://github.com/user-attachments/assets/eacac421-3f84-4564-aad3-05d00ec61441" width = "300"/>
+<img src="https://github.com/user-attachments/assets/eacac421-3f84-4564-aad3-05d00ec61441" width = "300"/><br>
     <em>Last computed average from **mysecond_VLP**.</em>
 </p>
 <br>
