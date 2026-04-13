@@ -33,7 +33,7 @@ cd mySTA/HIV_Capsid_SP1/
 
 ```
 # Copy tutorial data
-cp /users/yourusername/work/TRAINING/UNIL/FBM/pnavarr1/navarro_teaching/Dynamo_STA_data/mySTA/HIV_Capsid_SP1/{STA4Students.m,VLPtomograms.vll} ./
+cp /work/TRAINING/UNIL/FBM/pnavarr1/navarro_teaching/Dynamo_STA_data/mySTA/HIV_Capsid_SP1/{STA4Students.m,VLPtomograms.vll} ./
 ```
 
 **Installation and Dependencies** <br>
