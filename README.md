@@ -299,7 +299,7 @@ Since this is merely coarse average done before any alignment, we cannot see dis
 ### Subtomograms Alignment
 The alignment is one of the most critical steps in STA because this alignment project is how we will be rotating and spinning each particle in our subtomograms to one aligned state. We should always perform project alignment before performing any other customized alignment due to our limited understanding of the current particles at hand. <br>
 
-#### First Alignment Project
+### First Alignment Project
 
 ```
 %% First Alignment Project
@@ -447,6 +447,8 @@ In this section, we generate a mask to adjust the height of the our particle of 
 
 ```
 %% First Alignment: Align Symmetry Axis
+% Here we create a mask to better align our averaged result. We can either
+% use the following script, or on GUI through dynamo_mask();
 mr = dpktomo.examples.motiveTypes.Membrane();
 mr.thickness = 22;
 mr.sidelength = 96;
@@ -460,7 +462,10 @@ template(template>0) = 1; % binarize the new mask
 
 ```
 %% First Alignment: Evaluate aligned symmetry axis
-dview(template);
+%dview(template);
+%dwrite(template, 'mask_align_1_96.em');
+mask_path = fullfile('Z:\TRAINING\UNIL\FBM\pnavarr1\navarro_teaching\Dynamo_STA_data\mySTA\HIV_Capsid_SP1');
+dview([mask_path '\mask_align_1_96.em']);
 ```
 
 <p align="center"> 
@@ -473,29 +478,43 @@ dview(template);
 
 ```
 %% First Alignment: Apply Mask Alignment
-sal = dalign(oa.average, template, 'cr',30,'cs',5,'ir',0, ...
-    'dim',48,'limm',1,'lim',[15,15,15]);
+% dalign() can help us align our current average with the mask we
+% generated.
+
+% template is the customized mask
+%sal = dalign(oa.average, template, 'cr',30,'cs',5,'ir',0, ...
+%    'dim',48,'limm',1,'lim',[15,15,15]);
 
 %% First Alignment: Evaluate adjusted average
-dmapview(sal.aligned_particle);
+%dmapview(sal.aligned_particle);
+%dwrite(sal.aligned_particle, 'sal_aligned_average.em');
+dmapview([mask_path '\sal_aligned_average.em']);
 ```
 
 ```
 %% First Alignment: Save parameters
-tr = dynamo_table_rigid(finalTbl,sal.Tp);
+% Perform table rigid to make sure the table information of each individual
+% particles are aligned based on our mask adjustment.
+%tr = dynamo_table_rigid(finalTbl,sal.Tp);
 
 %% First Alignment: Adjust Oversampling
 % Exclude subvolumes that are closer than 20 px. of each other.
-trEx = dpktbl.exclusionPerVolume(tr,20);
+% Here from the adjust table above containing particle points, we excluse
+% those that are too close (20px) away from another point.
+
+% Why? So that we can minimize duplicated points.
+%trEx = dpktbl.exclusionPerVolume(tr,20);
 ```
+
 ```
 %% First Alignment: Save
-targetFolder = './particlesSize96r';
-dwrite(trEx,[targetFolder, '/crop_trEx.tbl']);
-oa = daverage(targetFolder, 't', trEx, 'fc', 1);
-% Visualize average after mask adjustment
-dview('./particlesSize96r/template_trEx.em')
+%targetFolder = './particlesSize96r';
+%dwrite(trEx,[targetFolder, '/crop_trEx.tbl']);
+%oa = daverage(targetFolder, 't', trEx, 'fc', 1);
+%dwrite(oa.average,[targetFolder '/template_trEx.em']);
+dview([targetFolder '/template_trEx.em']);
 ```
+
 <p align="center"> 
 <img src="https://github.com/user-attachments/assets/6b338d63-2888-4fed-8b55-f0f99d4412fe" width = "300"/>
 <img src="https://github.com/user-attachments/assets/6010ef2a-d62f-4c3c-b9df-24be3337f9d9" width = "300"/>
@@ -504,13 +523,11 @@ dview('./particlesSize96r/template_trEx.em')
 </p>
 <br>
 Notice that the Z is now more re-centered than in previous average.<br>
-```
-%% Save our adjusted average template
-dwrite(oa.average,[targetFolder '/template_trEx.em']);
-```
 
+### Second Alignment Project
+
+#### Prepare tigher mask for alignment procedure
 ```
-%% Apply mask alignment
 %% Second Alignment: Adjust Mask Refinement
 % Create an alignment mask
 mr = dpktomo.examples.motiveTypes.Membrane();
@@ -518,11 +535,10 @@ mr.thickness = 55;
 mr.sidelength = 96;
 mr.getMask();
 mem_mask = mr.mask;
-```
 
-```
-%% Visualize the data
-dview('./mem_mask_thick.em')
+%% Second Alignment: Save Mask Ref.
+%dwrite(mem_mask,'mem_mask_thick.em');
+dview([mask_path '\mem_mask_thick.em']);
 ```
 <p align="center"> 
 <img src="https://github.com/user-attachments/assets/c3168e10-c31f-47fd-8754-d94d3afefbf6" width = "300"/>
@@ -533,33 +549,28 @@ dview('./mem_mask_thick.em')
 <br>
 
 ```
-%% Mask Alignment: Visualize mask overlay
-dslices(oa.average,'y','-ov','mem_mask_thick.em','-ovas','mask','-ovc','r');
+%% Second Alignment: Visualize mask overlay
+dslices([targetFolder '/template_trEx.em'],'y','-ov',[mask_path '/mem_mask_thick.em'],'-ovas','mask','-ovc','r');
+% We should see that our masks are quite aligned with the ROI
 ```
-
-[insert result]
-
-```
-%% Second Alignment: Save Mask Ref.
-dwrite(mem_mask,'mem_mask_thick.em');
-```
-
-#### Second Alignment Project
 
 In the previous run, we aligned the last computed average from **myfirst_VLP** alignment project with subboxing and customized masks. The result of the adjusted average will now be used as a better template to further align our subvolumes (subtomograms). Notice how we improved the first template to the mask adjustment one? <br>
 
 To run the second alignment project, we use the following commands: <br>
 
+#### Second Alignment Project: Setting up
+
 ```
 %% Second Alignment: Create Alignment Project
 pr = 'mysecond_VLP';
-dcp.new(pr,'d',targetFolder,'t',[targetFolder '/crop_trEx.tbl'],'template',[targetFolder '/template_trEx.em'],'masks','default','show',0);
+dcp.new(pr,'d',targetFolder,'t',[targetFolder '/crop_trEx.tbl'],'template',[targetFolder '/template_trEx.em'], ...
+    'masks','default','show',0);
 ```
 
 ```
 %% Second Alignment: Adjust Numerical Parameters
 % Add new tight alignment mask
-dvput(pr, 'file_mask', 'mem_mask_thick.em');
+dvput(pr, 'file_mask', [mask_path '/mem_mask_thick.em']);
 %%
 % Parameters Round: 1
 dvput(pr,'ite_r1',2);
@@ -588,7 +599,7 @@ dvput(pr,'limm_r2',2);
 dvput(pr,'sym_r2','c6');
 
 % Computing Env.
-dvput(pr,'dst','standalone_gpu','cores',1,'mwa',2);
+dvput(pr,'dst','matlab_gpu','cores',1,'mwa',2);
 ```
 
 ```
@@ -601,20 +612,30 @@ dvcheck mysecond_VLP
 dvunfold mysecond_VLP
 ```
 
-```
-%% Second Alignment: Submit alignment job to cluster
-dynamo_submit('mysecond_VLP','gpus',1,'time','1:00:00');
-```
+%% Submit alignment script to cluster
+% On terminal, run the following and enter your password
+% ssh yourusername@curnagl.dcsr.unil.ch "bash /work/FAC/FBM/DMF/pnavarr1/default/Aurelien/dynamo_submit.sh ./users/yourusername/mySTA/HIV_Capsid_SP1/mysecond_VLP --test"
 
-```
-%% Check status of second alignment
-dvstatus mysecond_VLP
-```
+%% Short Quiz Session
+% 1. How can dalign() with customized mask adjustment help with our
+% alignment?
+
+% 2. Can we replace numerical parameter alignment entirely with customized
+% mask adjustment?
+
+% 3. What's the difference between cone and azimuth (in-plane) range?
 
 Once completed, we can evaluate the last computed average from **mysecond_VLP**. <br>
 
 ```
-ddb mysecond_VLP:a -v
+%% Second Alignment: Check status of alignment
+dvstatus mysecond_VLP
+```
+
+```
+%% Check second alignment result
+ddb mysecond_VLP:a -v % last computed average
+% We can view this on Dynamo mapview from the panel
 ```
 
 <p align="center"> 
@@ -625,25 +646,31 @@ ddb mysecond_VLP:a -v
 </p>
 <br>
 
-The last computed average from **mysecond_VLP** is now interpretable! On **Z**, we can visualize where the **capsid protein 24** resides in the center of the capsid. Unfortunately, we must go back to the original size of **128px** to fully visualize them. We don't need intensive alignment on our third project, so we will perform light alignment with higher cropping size. <br>
-
-#### Final adjustments
-
+The last computed average from **mysecond_VLP** is now interpretable! Unfortunately, we must go back to the original size of **128px** to fully visualize them. We don't need intensive alignment on our third project, so we will perform light alignment with higher cropping size. <br>
 ```
 % Load the last computed average
-ddb mysecond_VLP:rt -ws t
+%ddb second_VLP:rt -ws t
 
 % Assign target folder to store results
-targetFolder = './particlesSize128_aligned_2';
-dtcrop('VLPtomograms.doc', t, targetFolder, 128); % We use the original tomograms to re-crop.
+%targetFolder = './particlesSize128_align_2';
+%dtcrop('VLPtomograms.doc', t, targetFolder, 128);
 ```
+
+
+#### Second Alignment: Re-compute average
+
 ```
-%% Second Alignment: Re-compute average
 % Average and visualize the re-cropped particles
-finalTbl = dread([targetFolder,'/crop.tbl']);
-oAfter = daverage(targetFolder, 't', finalTbl,'fc',1);
-dview(oAfter.average);
+%finalTbl = dread([targetFolder,'/crop.tbl']);
+%oAfter = daverage(targetFolder, 't', finalTbl,'fc',1);
+%dview(oAfter.average);
+
+%% Second Alignment: Save Re-cropped template
+%dwrite(oAfter.average,[targetFolder '/template.em']);
+targetFolder = fullfile('Z:\TRAINING\UNIL\FBM\pnavarr1\navarro_teaching\Dynamo_STA_data\mySTA\HIV_Capsid_SP1\particlesSize128_align_2');
+dview([targetFolder '/template.em']);
 ```
+
 <p align="center"> 
 <img src="https://github.com/user-attachments/assets/97ea6c7f-535a-40a2-b2fa-56d13c607023" width = "300"/>
 <img src="https://github.com/user-attachments/assets/51e9170a-089a-4624-8040-54468fd3bfee" width = "300"/>
@@ -653,12 +680,12 @@ dview(oAfter.average);
 <br>
 Notice that here we can get a larger overview of the capsid. We can then use this for our third alignment project as a template. <br>
 
+
+### Third Alignment Project
+
+#### Prepare tighter mask for third alignment project
+
 ```
-%% Second Alignment: Save Re-cropped template
-dwrite(oAfter.average,[targetFolder '/template.em']);
-```
-```
-%% Third Alignment: Adjust Mask Refinement
 % Create an alignment mask
 mr = dpktomo.examples.motiveTypes.Membrane();
 mr.thickness = 40;
@@ -668,8 +695,15 @@ mem_mask = mr.mask;
 ```
 
 ```
-%% Evaluate mask
-dview('./mem_mask_thick_128.em');
+%% Third Alignment: Save Mask Ref.
+%dwrite(mem_mask,'mem_mask_thick_128.em');
+dview([mask_path '/mem_mask_thick_128.em']);
+```
+
+```
+%% Third Alignment: Visualize mask overlay
+dslices([targetFolder '/template.em'],'x','-ov',[mask_path '/mem_mask_thick_128.em'],'-ovas','mask','-ovc','r');
+% We should see that our masks are quite aligned with the ROI
 ```
 <p align="center"> 
 <img src="https://github.com/user-attachments/assets/c9302afa-6a29-4a49-a31a-de257dc8f816" width = "300" />
@@ -679,29 +713,23 @@ dview('./mem_mask_thick_128.em');
 </p>
 <br>
 
-```
-%% Third Alignment: Visualize mask overlay
-dslices(oAfter.average,'x','-ov','mem_mask_thick_128.em','-ovas','mask','-ovc','r');
-% We should see that our masks are quite aligned with the ROI even in 128.
-```
-
-```
-%% Third Alignment: Save Mask Ref.
-dwrite(mem_mask,'mem_mask_thick_128.em');
-```
+#### Third Alignment Project: Setting up
 
 ```
 %% Third Alignment: Create Alignment Project
-pr = 'third_VLP';
-dcp.new(pr,'d',targetFolder,'t',[targetFolder '/crop.tbl'],'template',[targetFolder '/template.em'],'masks','default','show',0);
+pr = 'mythird_VLP';
+dcp.new(pr,'d',targetFolder,'t',[targetFolder '/crop.tbl'],'template',[targetFolder '/template.em'],'masks','default','show',0, ...
+    'forceOverwrite',1);
 ```
 
+#### Third Alignment: Adjust Numerical Parameters
+
 ```
-%% Third Alignment: Adjust Numerical Parameters
 % Add new tight alignment mask
-dvput(pr, 'file_mask', 'mem_mask_thick_128.em');
+dvput(pr, 'file_mask', [mask_path '/mem_mask_thick_128.em']);
+%%
 % Parameters Round: 1
-dvput(pr,'ite_r1',2);
+dvput(pr,'ite_r1',1);
 dvput(pr,'cr_r1',20);
 dvput(pr,'cs_r1',5);
 dvput(pr,'ir_r1',20);
@@ -720,7 +748,7 @@ dvput(pr,'thr_r1',0.20);
 dvput(pr,'thrmod_r1',0);
 
 % Parameters Round: 2
-dvput(pr,'ite_r2',2);
+dvput(pr,'ite_r2',1);
 dvput(pr,'cr_r2',10);
 dvput(pr,'cs_r2',3);
 dvput(pr,'ir_r2',10);
@@ -737,29 +765,31 @@ dvput(pr,'sep_r2',0);
 dvput(pr,'rm_r2',0);
 dvput(pr,'thr_r2',0.20);
 dvput(pr,'thrmod_r2',0);
-
 % Computing Env.
-dvput(pr,'dst','standalone_gpu','cores',1,'mwa',2);
+dvput(pr,'dst','matlab_gpu','cores',1,'mwa',2);
 ```
-
 ```
 %% Third Alignment: Check Parameters
 dvcheck mythird_VLP
 ```
-
 ```
 %% Third Alignment: Confirm Parameters
 dvunfold mythird_VLP
 ```
 
-```
-%% Third: Submit alignment job to cluster
-dynamo_submit('mythird_VLP','gpus',1,'time','1:00:00');
-```
+#### Submit alignment script to cluster
+% On terminal, run the following and enter your password
+% ssh yourusername@curnagl.dcsr.unil.ch "bash /work/FAC/FBM/DMF/pnavarr1/default/Aurelien/dynamo_submit.sh ./users/yourusername/mySTA/HIV_Capsid_SP1/mythird_VLP --test"
+
+#### Short Quiz Session
+**1. How do you choose a proper box size?
+**2. From your current understanding, what makes STA different than SPA?**<br>
+**3. How can STA answer and/or support your structural biology research?**<br>
+
 
 ```
-%% Third: Status
-ddb mythird_VLP:a -v
+%% Third Alignment: Check status of alignment
+dvstatus mythird_VLP
 ```
 
 <p align="center"> 
@@ -770,12 +800,25 @@ ddb mythird_VLP:a -v
 </p>
 <br>
 
+#### Visualizing STA
+
+```
+% Connect and activate our Chimera
+dynamo_chimera -path 'C:\Program Files\Chimera 1.19\bin\chimera.exe'
+```
+
+```
+%% Check first alignment result
+ddb mythird_VLP:a -v % last computed average
+```
+
 On **dview**, go to top panel and select **Export** > **Invert, send to Chimera UCSF**. This will give you the finalized result of the HIV capsid structure. You can also explore **Chimera** platform to adjust 3D visualization. <br>
 
 ```
 % Run this to create mask while viewing every result
 dynamo_mask();
 ```
+
 This will return the following GUI, and you can follow the parameters below. You can visualize each mask with *view* button. <br>
 
 <p align="center"> 
@@ -793,7 +836,16 @@ This will return the following GUI, and you can follow the parameters below. You
     <em> Tube mask after reference adjustment view .</em>
 </p> <br>
 
-
+```
+%% Third Alignment: Visualize mask overlay
+crop_mask = dread('tube_map_masked.em');
+inv_mask = -crop_mask;
+dview(inv_mask)
+% dview([mask_path, '/tube_map_masked.em']);
+%% Third Alignment: Save
+%dwrite(inv_mask,'inv_tube_mask_128.em');
+dview([mask_path, '/inv_tube_mask_128.em']);
+```
 
 ```
 %% Third Alignment: Apply Cropped Mask Alignment
@@ -804,7 +856,7 @@ sal = dalign('temp.em', [mask_path, '/inv_tube_mask_128.em'], 'cr',0,'cs',0,'ir'
 
 %% Third Alignment: Evaluate adjusted average
 dmapview(sal.aligned_particle);
-%dwrite(sal.aligned_particle, 'sal_aligned_average_final.em')
+%dwrite(sal.aligned_particle, 'sal_aligned_average_final.em');
 ```
 To visualize our STA (subtomogram averaged) volume,  we select the **Chimera** panel on top then proceeds to **Invert + Append current volume to running Chimera session**. Chimera GUI should now open up with our STA structure. The box noise is now removed since we applied the cropping mask previously, but to further clean our noise, proceed to **Tools > Volume Data > Hide Dust** and adjust by sliding the *Hide Dust* slide. Your volume should roughly look similar to the original lattice but with lower resolution. <br>
 
@@ -848,9 +900,6 @@ In case you would like to analyze the mid-section of the structure, you can "sli
 <img src="https://github.com/user-attachments/assets/80a6303e-4577-4043-be56-3d573853dee6" width = 370/> <br>
  <em> High-res (green) and low-res (gray) overlay STA. Box size difference.</em>
 </p> <br>
-
-
-
 
 
 
