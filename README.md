@@ -700,11 +700,6 @@ mem_mask = mr.mask;
 dview([mask_path '/mem_mask_thick_128.em']);
 ```
 
-```
-%% Third Alignment: Visualize mask overlay
-dslices([targetFolder '/template.em'],'x','-ov',[mask_path '/mem_mask_thick_128.em'],'-ovas','mask','-ovc','r');
-% We should see that our masks are quite aligned with the ROI
-```
 <p align="center"> 
 <img src="https://github.com/user-attachments/assets/c9302afa-6a29-4a49-a31a-de257dc8f816" width = "300" />
 <img src="https://github.com/user-attachments/assets/db7fa240-02ca-4347-9b94-7db10fbf7120" width = "300"/>
@@ -712,6 +707,11 @@ dslices([targetFolder '/template.em'],'x','-ov',[mask_path '/mem_mask_thick_128.
     <em> 128 box size mask.</em>
 </p>
 <br>
+```
+%% Third Alignment: Visualize mask overlay
+dslices([targetFolder '/template.em'],'x','-ov',[mask_path '/mem_mask_thick_128.em'],'-ovas','mask','-ovc','r');
+% We should see that our masks are quite aligned with the ROI
+```
 
 #### Third Alignment Project: Setting up
 
