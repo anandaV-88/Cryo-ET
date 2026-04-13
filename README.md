@@ -14,8 +14,7 @@ In this tutorial, we will be visualizing an **HIV-1 capsid-SP1** (shown below) d
 <img  src="https://github.com/user-attachments/assets/aa78864e-44e3-4d8e-951b-1f4113a55de5" width = "450" /> <img src="https://github.com/user-attachments/assets/ca97b18e-dc12-48dc-9691-a3efd53b44b9" width = "380"/>
 
 **Data Requirement** <br>
-- Tutorial data <br>
-*If you'd like to use your own dataset, we recommend you to crop your original tomogram or bin your tomogram by 4 to familiarize with the whole processing pipeline. Once satisifed with your tutorial structure, you may lower binning level to obtain higher resolution.
+- Tutorial data: *For UNIL MLS students, your tutorial data will be provided in class.* <br>
 
 **Installation and Dependencies** <br>
 *For UNIL MLS students, your dependencies will be provided to you in class.*
