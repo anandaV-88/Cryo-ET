@@ -73,7 +73,7 @@ Similar to Single Particle Analysis (SPA), STA follows the same box size rules w
 #### Generating model: Dynamo-GUI
 To perform particle selection, we always use GUI to make sure we can visualize what we are collecting. Always use tomograms where scaling have been adjusted to avoid memory complications. Here, we will generate a model based on **dipoleSet**. Particularly for this viral capsid, the dipoleSet model will allow us to: <br>
 
-**- Manually label capsid center and pole (north and/or south) per capsid model.** <br>
+**- Manually label capsid center and pole (north and/or south) of its envelope surface.** <br>
 
 **- Measure the distance between the 2 points you labeled (e.g., center and north/south)**. <br>
 
