@@ -66,6 +66,9 @@ dynamo_catalogue_bin('myVLP',1,'zchunk',300);
 ```
 If your own tomogram is at its highest resolution, it would be wise to switch the bin size to "2" so that it will be faster for you to visualize your model on Dynamo GUI. It is highly advised to follow this step even if you are not binning your tomogram. The *dynamo_catalogue_bin* helps Dynamo to confirm your tomogram scale size along the way.<br>
 
+**How can we specify box size value?** <br>
+Similar to Single Particle Analysis (SPA), STA follows the same box size rules which you can refer ([here](https://blake.bcm.edu/emanwiki/doku.php?id=eman2:boxsize)).
+
 #### Generating model: Dynamo-GUI
 To perform particle selection, we always use GUI to make sure we can visualize what we are collecting. Always use tomograms where scaling have been adjusted to avoid memory complications. Here, we will generate a model based on **dipoleSet**. Particularly for this viral capsid, the dipoleSet model will allow us to: <br>
 
