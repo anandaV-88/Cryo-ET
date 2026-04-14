@@ -370,7 +370,7 @@ dvunfold myfirst_VLP
 ```
 %% Submit alignment script to cluster
 % On terminal, run the following and enter your password
-% ssh yourusername@curnagl.dcsr.unil.ch "bash /work/FAC/FBM/DMF/pnavarr1/default/Aurelien/dynamo_submit.sh ./users/your_username/mySTA/HIV_Capsid_SP1/myfirst_VLP --test"
+% ssh yourusername@curnagl.dcsr.unil.ch "bash /work/TRAINING/UNIL/FBM/pnavarr1/navarro_teaching/Dynamo_STA_data/dynamo_submit.sh ./mySTA/HIV_Capsid_SP1/studentfirst_VLP"
 ```
 
 1. Log in to your curnagl and check if your project is running on GPU cluster. <br>
@@ -628,7 +628,7 @@ dvunfold mysecond_VLP
 
 %% Submit alignment script to cluster
 % On terminal, run the following and enter your password
-% ssh yourusername@curnagl.dcsr.unil.ch "bash /work/FAC/FBM/DMF/pnavarr1/default/Aurelien/dynamo_submit.sh ./users/yourusername/mySTA/HIV_Capsid_SP1/mysecond_VLP --test"
+% ssh yourusername@curnagl.dcsr.unil.ch "bash /work/TRAINING/UNIL/FBM/pnavarr1/navarro_teaching/Dynamo_STA_data/dynamo_submit.sh ./mySTA/HIV_Capsid_SP1/studentsecond_VLP""
 
 **Short Quiz Session**
 **1. How can dalign() with customized mask adjustment help with our alignment?** <br>
@@ -791,7 +791,7 @@ dvunfold mythird_VLP
 
 #### Submit alignment script to cluster
 % On terminal, run the following and enter your password
-% ssh yourusername@curnagl.dcsr.unil.ch "bash /work/FAC/FBM/DMF/pnavarr1/default/Aurelien/dynamo_submit.sh ./users/yourusername/mySTA/HIV_Capsid_SP1/mythird_VLP --test"
+% ssh yourusername@curnagl.dcsr.unil.ch "bash /work/TRAINING/UNIL/FBM/pnavarr1/navarro_teaching/Dynamo_STA_data/dynamo_submit.sh ./mySTA/HIV_Capsid_SP1/studentthird_VLP""
 
 #### Short Quiz Session
 **1. How do you choose a proper box size?** <br>
