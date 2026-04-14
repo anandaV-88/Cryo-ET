@@ -22,18 +22,10 @@ In this tutorial, we will be visualizing an **HIV-1 capsid-SP1** (shown below) d
 # On terminal, log in to curnagl
 ssh yourusername@curnagl.dcsr.unil.ch
 ```
-
-```
-# Create directory
-mkdir -p mySTA/HIV_Capsid_SP1/
-
-# Set working directory
-cd mySTA/HIV_Capsid_SP1/
-```
-
+In your home directory:<br>
 ```
 # Copy tutorial data
-cp /work/TRAINING/UNIL/FBM/pnavarr1/navarro_teaching/Dynamo_STA_data/mySTA/HIV_Capsid_SP1/{STA4Students.m,VLPtomograms.vll} ./
+cp -r /work/TRAINING/UNIL/FBM/pnavarr1/navarro_teaching/Dynamo_STA_data/mySTA ./
 ```
 
 **Installation and Dependencies** <br>
