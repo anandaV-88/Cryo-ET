@@ -2,6 +2,10 @@
 % Prior to generating structure of interest, if you have not, please install Dynamo-EM package on MATLAB,
 % GPU availability and 3D reconstructed tomogram(s).
 
+% Setup dependencies
+setenv('MW_MINGW64_LOC','C:\mingw64')
+mex -setup C++
+
 %% Activate Dynamo
 clear;clc; % Good practice to make sure workspace is clean to avoid variable duplicates.
 % Load Dynamo package: Adjust path if needed.
@@ -10,12 +14,12 @@ run C:\CoursNavarro\Dynamo\dynamo_temp_1.1.555\dynamo_activate.m
 %% Create a catalogue
 % Catalogue is where your tomograms and associated particle models are
 % stored. Please adjust VLPtomograms.vll path here.
-dcm -create myVLP -fromvll VLPtomograms.vll
+dcm -create studentVLP -fromvll VLPtomograms.vll
 
 %% Pre-bin the tomograms
 % A good practice so Dynamo will know the scaling size of your tomograms.
 % Catalogue name, binning factor, and 300 zlices at a time in XY plane.
-dynamo_catalogue_bin('myVLP',1,'zchunk',300); % This should alrady been done.
+dynamo_catalogue_bin('studentVLP',1,'zchunk',300); % This should alrady been done.
 
 %% Load tutorial path
 % For most of the metadata, we'll be using the following results from
@@ -31,7 +35,7 @@ cat_Path = fullfile('Z:\TRAINING\UNIL\FBM\pnavarr1\navarro_teaching\Dynamo_STA_d
 % tutorials, you may select 2. This will provide quicker visualization on
 % Dynamo without crashes.
 tomo_path = fullfile(cat_Path, 'DownloadLinkVLPs/vlp_1.mrc');
-dtmslice(tomo_path, 'c', 'myVLP','prebinned',1);
+dtmslice(tomo_path, 'c', 'studentVLP','prebinned',1);
 % You can create one model and save to disk. However, we will proceed with the
 % models that have been created for tutorials.
 
@@ -42,7 +46,7 @@ dtmslice(tomo_path, 'c', 'myVLP','prebinned',1);
 % are within the specified area for further processing.
 
 %% Load the tutorial models into our catalogue
-catName = 'myVLP'; % Put our catalogue name here
+catName = 'studentVLP'; % Put our catalogue name here
 % Full path to the models available from tutorial data
 modelDir = 'Z:\TRAINING\UNIL\FBM\pnavarr1\navarro_teaching\Dynamo_STA_data\DipoleModels';
 
@@ -57,7 +61,7 @@ end
 
 %% Define crop points
 % Load dipoleSet model of each tomogram from catalogue into workspace
-dcmodels myVLP -nc dipoleSet -ws o -gm 1;
+dcmodels studentVLP -nc dipoleSet -ws o -gm 1;
 
 % nc : name contains, -ws: workspace output , -gm 1 (dipole)
 %% Create a table from each vesicle model
@@ -126,7 +130,7 @@ paths = textscan(fid_read, '%s');
 fclose(fid_read);
 
 % Assign each row with unique ID
-fid = fopen('VLPtomograms.doc', 'w');
+fid = fopen('studentsVLPtomograms.doc', 'w');
 for i = 1:length(paths{1})
     fprintf(fid, '%d %s\n', i, paths{1}{i});
 end
@@ -145,7 +149,7 @@ fclose(fid);
 %% Generate initial averages
 % Load as variable
 % Load generated particles
-targetFolder = fullfile('Z:\TRAINING\UNIL\FBM\pnavarr1\navarro_teaching\Dynamo_STA_data\mySTA\HIV_Capsid_SP1\particlesSize128');
+targetFolder = 'particlesSize128';
 finalTbl = dread([targetFolder '\crop.tbl']);
 
 %% Visualize individual particles
@@ -170,7 +174,7 @@ dview([targetFolder '/template.em']);
 
 %% First Alignment Project
 % Variable for alignment project
-pr = 'myfirst_VLP';
+pr = 'studentfirst_VLP';
 % Generate parameter
 dcp.new(pr,'d',targetFolder,'t',[targetFolder '/crop.tbl'], 'template', ...
     [targetFolder '/template.em'],'masks','default','show',0, 'forceOverwrite', 1);
@@ -204,14 +208,16 @@ dvput(pr,'dst','matlab_gpu','cores',1,'mwa',2);
 % follow the document shared on GitHub.
 
 %% First Alignment: Check Numerical Parameters
-dvcheck myfirst_VLP
+dvcheck studentfirst_VLP
+%dvcheck myfirst_VLP % (tutorial)
 
 %% First Alignment: Confirm Numerical Parameters
-dvunfold myfirst_VLP
+dvunfold studentfirst_VLP
+%dvunfold myfirst_VLP % (tutorial)
 
 %% Submit alignment script to cluster
 % On terminal, run the following and enter your password
-% ssh yourusername@curnagl.dcsr.unil.ch "bash /work/FAC/FBM/DMF/pnavarr1/default/Aurelien/dynamo_submit.sh ./users/vananda/mySTA/HIV_Capsid_SP1/myfirst_VLP --test"
+% ssh yourusername@curnagl.dcsr.unil.ch "bash /work/TRAINING/UNIL/FBM/pnavarr1/navarro_teaching/Dynamo_STA_data/dynamo_submit.sh ./mySTA/HIV_Capsid_SP1/studentfirst_VLP"
 
 %% Short Quiz Session
 % 1. Can we perform subvolume cropping on denoised tomogram?
@@ -219,11 +225,12 @@ dvunfold myfirst_VLP
 % 3. How important is box size adjustment in STA?
 
 %% First Alignment: Check status of alignment
-dvstatus myfirst_VLP
+dvstatus studentfirst_VLP
+%dvstatus myfirst_VLP % (tutorial)
 
 %% Check first alignment result
-ddb myfirst_VLP:a -v % last computed average
-
+ddb studentfirst_VLP:a -v % last computed average
+%ddb myfirst_VLP:a -v % last computed average (tutorial)
 %% First Alignment: Subboxing
 
 % Subboxing might be necessary when we'd like to slighly re-center our
@@ -249,7 +256,7 @@ ddb myfirst_VLP:a -v % last computed average
 %dtcrop('VLPtomograms.doc',ts,targetFolder,96);
 
 %% Evaluate cropped particles
-targetFolder = fullfile('Z:\TRAINING\UNIL\FBM\pnavarr1\navarro_teaching\Dynamo_STA_data\mySTA\HIV_Capsid_SP1\particlesSize96r');
+targetFolder = 'particlesSize96r';
 
 %% First Alignment: Evaluate
 % Average and visualize the re-cropped particles
@@ -263,10 +270,10 @@ dview([targetFolder '/template.em']);
 %% First Alignment: Align Symmetry Axis
 % Here we create a mask to better align our averaged result. We can either
 % use the following script, or on GUI through dynamo_mask();
-mr = dpktomo.examples.motiveTypes.Membrane();
-mr.thickness = 22;
-mr.sidelength = 96;
-mr.getMask();
+mr = dpktomo.examples.motiveTypes.Membrane(); % Feature from Dynamo
+mr.thickness = 22; % Adjust thickness
+mr.sidelength = 96; % same as boxsize
+mr.getMask(); % generate meask
 mem  = (mr.mask)*(-1)+1;  % invert contrast
 cyl = dynamo_cylinder(7,96,[48,48,48]);  % create a cylinder (this will be the 'hole')
 templateSum = mem+cyl;    % sum the two masks
@@ -274,10 +281,9 @@ template = templateSum;
 template(template>0) = 1; % binarize the new mask
 
 %% First Alignment: Evaluate aligned symmetry axis
-%dview(template);
-%dwrite(template, 'mask_align_1_96.em');
-mask_path = fullfile('Z:\TRAINING\UNIL\FBM\pnavarr1\navarro_teaching\Dynamo_STA_data\mySTA\HIV_Capsid_SP1');
-dview([mask_path '\mask_align_1_96.em']);
+dview(template);
+dwrite(template, 'studentmask_align_1_96.em');
+%dview('mask_align_1_96.em'); % Tutorial result
 
 %% First Alignment: Apply Mask Alignment
 % dalign() can help us align our current average with the mask we
@@ -290,7 +296,7 @@ dview([mask_path '\mask_align_1_96.em']);
 %% First Alignment: Evaluate adjusted average
 %dmapview(sal.aligned_particle);
 %dwrite(sal.aligned_particle, 'sal_aligned_average.em');
-dmapview([mask_path '\sal_aligned_average.em']);
+dmapview('sal_aligned_average.em'); % Tutorial result
 
 %% First Alignment: Save parameters
 % Perform table rigid to make sure the table information of each individual
@@ -306,7 +312,7 @@ dmapview([mask_path '\sal_aligned_average.em']);
 %trEx = dpktbl.exclusionPerVolume(tr,20);
 
 %% First Alignment: Save
-%targetFolder = './particlesSize96r';
+targetFolder = './particlesSize96r';
 %dwrite(trEx,[targetFolder, '/crop_trEx.tbl']);
 %oa = daverage(targetFolder, 't', trEx, 'fc', 1);
 %dwrite(oa.average,[targetFolder '/template_trEx.em']);
@@ -323,21 +329,21 @@ mr.getMask();
 mem_mask = mr.mask;
 
 %% Second Alignment: Save Mask Ref.
-%dwrite(mem_mask,'mem_mask_thick.em');
-dview([mask_path '\mem_mask_thick.em']);
+%dwrite(mem_mask,'studentmem_mask_thick.em');
+dview('mem_mask_thick.em'); % Tutorial result
 
 %% Second Alignment: Visualize mask overlay
-dslices([targetFolder '/template_trEx.em'],'y','-ov',[mask_path '/mem_mask_thick.em'],'-ovas','mask','-ovc','r');
+dslices([targetFolder '/template_trEx.em'],'x','-ov','mem_mask_thick.em','-ovas','mask','-ovc','r');
 % We should see that our masks are quite aligned with the ROI
 
 %% Second Alignment: Create Alignment Project
-pr = 'mysecond_VLP';
+pr = 'studentsecond_VLP';
 dcp.new(pr,'d',targetFolder,'t',[targetFolder '/crop_trEx.tbl'],'template',[targetFolder '/template_trEx.em'], ...
     'masks','default','show',0);
 
 %% Second Alignment: Adjust Numerical Parameters
 % Add new tight alignment mask
-dvput(pr, 'file_mask', [mask_path '/mem_mask_thick.em']);
+dvput(pr, 'file_mask', 'mem_mask_thick.em');
 %%
 % Parameters Round: 1
 dvput(pr,'ite_r1',2);
@@ -369,14 +375,14 @@ dvput(pr,'sym_r2','c6');
 dvput(pr,'dst','matlab_gpu','cores',1,'mwa',2);
 
 %% Second Alignment: Check Parameters
-dvcheck mysecond_VLP
-
+dvcheck studentsecond_VLP
+%dvcheck mysecond_VLP % Tutorial result
 %% Second Alignment: Confirm Parameters
 dvunfold mysecond_VLP
-
+%dvunfold mysecond_VLP % Tutorial result
 %% Submit alignment script to cluster
 % On terminal, run the following and enter your password
-% ssh yourusername@curnagl.dcsr.unil.ch "bash /work/FAC/FBM/DMF/pnavarr1/default/Aurelien/dynamo_submit.sh ./users/vananda/mySTA/HIV_Capsid_SP1/mysecond_VLP --test"
+% ssh yourusername@curnagl.dcsr.unil.ch "bash /work/TRAINING/UNIL/FBM/pnavarr1/navarro_teaching/Dynamo_STA_data/dynamo_submit.sh ./mySTA/HIV_Capsid_SP1/studentsecond_VLP"
 
 %% Short Quiz Session
 % 1. How can dalign() with customized mask adjustment help with our
@@ -388,11 +394,13 @@ dvunfold mysecond_VLP
 % 3. What's the difference between cone and azimuth (in-plane) range?
 
 %% Second Alignment: Check status of alignment
-dvstatus mysecond_VLP
+dvstatus studentsecond_VLP
+%dvstatus mysecond_VLP % Tutorial result
 
 %% Check second alignment result
-ddb mysecond_VLP:a -v % last computed average
+ddb studentsecond_VLP:a -v % last computed average
 % We can view this on Dynamo mapview from the panel
+%ddb mysecond_VLP:a -v % last computed average (Tutorial)
 %% Second Alignment: Evaluate the averages
 % Evaluate the averages of all iterations from initial to the last.
 
@@ -411,7 +419,7 @@ ddb mysecond_VLP:a -v % last computed average
 
 %% Second Alignment: Save Re-cropped template
 %dwrite(oAfter.average,[targetFolder '/template.em']);
-targetFolder = fullfile('Z:\TRAINING\UNIL\FBM\pnavarr1\navarro_teaching\Dynamo_STA_data\mySTA\HIV_Capsid_SP1\particlesSize128_align_2');
+targetFolder = 'particlesSize128_align_2';
 dview([targetFolder '/template.em']);
 
 %% PART 3
@@ -425,21 +433,21 @@ mr.getMask();
 mem_mask = mr.mask;
 
 %% Third Alignment: Save Mask Ref.
-%dwrite(mem_mask,'mem_mask_thick_128.em');
-dview([mask_path '/mem_mask_thick_128.em']);
+%dwrite(mem_mask,'studentmem_mask_thick_128.em');
+dview('mem_mask_thick_128.em');
 
 %% Third Alignment: Visualize mask overlay
-dslices([targetFolder '/template.em'],'x','-ov',[mask_path '/mem_mask_thick_128.em'],'-ovas','mask','-ovc','r');
+dslices([targetFolder '/template.em'],'x','-ov','mem_mask_thick_128.em','-ovas','mask','-ovc','r');
 % We should see that our masks are quite aligned with the ROI
 
 %% Third Alignment: Create Alignment Project
-pr = 'mythird_VLP';
+pr = 'studentthird_VLP';
 dcp.new(pr,'d',targetFolder,'t',[targetFolder '/crop.tbl'],'template',[targetFolder '/template.em'],'masks','default','show',0, ...
     'forceOverwrite',1);
 
 %% Second Alignment: Adjust Numerical Parameters
 % Add new tight alignment mask
-dvput(pr, 'file_mask', [mask_path '/mem_mask_thick_128.em']);
+dvput(pr, 'file_mask', 'mem_mask_thick_128.em');
 %%
 % Parameters Round: 1
 dvput(pr,'ite_r1',1);
@@ -483,14 +491,14 @@ dvput(pr,'thrmod_r2',0);
 dvput(pr,'dst','matlab_gpu','cores',1,'mwa',2);
 
 %% Third Alignment: Check Parameters
-dvcheck mythird_VLP
-
+dvcheck studentthird_VLP
+%dvcheck mythird_VLP % Tutorial
 %% Third Alignment: Confirm Parameters
-dvunfold mythird_VLP
-
+dvunfold studentthird_VLP
+%dvunfold mythird_VLP % Tutorial
 %% Submit alignment script to cluster
 % On terminal, run the following and enter your password
-% ssh yourusername@curnagl.dcsr.unil.ch "bash /work/FAC/FBM/DMF/pnavarr1/default/Aurelien/dynamo_submit.sh ./users/vananda/mySTA/HIV_Capsid_SP1/mythird_VLP --test"
+% ssh yourusername@curnagl.dcsr.unil.ch "bash /work/TRAINING/UNIL/FBM/pnavarr1/navarro_teaching/Dynamo_STA_data/dynamo_submit.sh ./mySTA/HIV_Capsid_SP1/studentthird_VLP"
 
 %% Short Quiz Session
 % 1. How do you choose a proper box size?
@@ -498,14 +506,15 @@ dvunfold mythird_VLP
 % 3. How can STA answer and/or support your structural biology research?
 
 %% Third Alignment: Check status of alignment
-dvstatus mythird_VLP
+dvstatus studentthird_VLP
+%dvstatus mythird_VLP % Tutorial
 
 %% To visualize
 % Connect and activate our Chimera
 dynamo_chimera -path 'C:\Program Files\Chimera 1.19\bin\chimera.exe'
-%% Check first alignment result
-ddb mythird_VLP:a -v % last computed average
-
+%% Check third alignment result
+ddb studentthird_VLP:a -v % last computed average
+%ddb mythird_VLP:a -v % last computed average (Tutorial)
 %% Create a cropping mask
 dynamo_mask()
 
@@ -513,14 +522,15 @@ dynamo_mask()
 crop_mask = dread('tube_map_masked.em');
 inv_mask = -crop_mask;
 dview(inv_mask)
-% dview([mask_path, '/tube_map_masked.em']);
+% dview('tube_map_masked.em']);
 %% Third Alignment: Save
-%dwrite(inv_mask,'inv_tube_mask_128.em');
-dview([mask_path, '/inv_tube_mask_128.em']);
+%dwrite(inv_mask,'studentinv_tube_mask_128.em');
+dview('inv_tube_mask_128.em');
 %% Third Alignment: Apply Cropped Mask Alignment
 % Here, we no longer adjust the numerical parameters because our previous
-% computed average from third alignment was alredy decent.
-sal = dalign('temp.em', [mask_path, '/inv_tube_mask_128.em'], 'cr',0,'cs',0,'ir',0, ...
+% computed average from third alignment was alredy decent. Temp.em is the
+% last computed average from 3rd alignment project.
+sal = dalign('temp.em','inv_tube_mask_128.em', 'cr',0,'cs',0,'ir',0, ...
     'dim',128,'limm',1, 'lim',[0,0,0]);
 
 %% Third Alignment: Evaluate adjusted average
