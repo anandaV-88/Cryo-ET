@@ -630,14 +630,10 @@ dvunfold mysecond_VLP
 % On terminal, run the following and enter your password
 % ssh yourusername@curnagl.dcsr.unil.ch "bash /work/FAC/FBM/DMF/pnavarr1/default/Aurelien/dynamo_submit.sh ./users/yourusername/mySTA/HIV_Capsid_SP1/mysecond_VLP --test"
 
-%% Short Quiz Session
-% 1. How can dalign() with customized mask adjustment help with our
-% alignment?
-
-% 2. Can we replace numerical parameter alignment entirely with customized
-% mask adjustment?
-
-% 3. What's the difference between cone and azimuth (in-plane) range?
+**Short Quiz Session**
+**1. How can dalign() with customized mask adjustment help with our alignment?** <br>
+**2. Can we replace numerical parameter alignment entirely with customized mask adjustment?** <br>
+**3. What's the difference between cone and azimuth (in-plane) range?** <br>
 
 Once completed, we can evaluate the last computed average from **mysecond_VLP**. <br>
 
