@@ -325,7 +325,10 @@ dcp.new(pr,'d',targetFolder,'t',[targetFolder '/crop.tbl'], 'template', ...
 ```
 Next, we determine our **numerical parameters**, which refers to the rotations, angles, and shifting fine tuning so that our particles are aligned. This step is one of the most cumbersome methods because there is no definitive parameters for every structure. This means you must perform this on 1 structure state at a time from your selected particle model. In our case, we will perform 2-3 alignment projects for all the VLP capsid dipoleSet models at once. <br>
 
-For more information on the command lines, you can refer on ('[Dynamo_Command_Info.pdf](https://github.com/anandaV-88/Cryo-ET/blob/main/Dynamo_Command_Info.pdf)').
+For more information on the command lines, you can refer on ('[Dynamo_Command_Info.pdf](https://github.com/anandaV-88/Cryo-ET/blob/main/Dynamo_Command_Info.pdf)').<br>
+
+![capsid_cone_inplane_shift_box](https://github.com/user-attachments/assets/764243f1-3812-47b7-8cbc-12c8310474ab)
+
 
 ```
 %% First Alignment: Adjust Numerical Parameters
